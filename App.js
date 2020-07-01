@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView} from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
@@ -9,15 +9,15 @@ class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tableHead: ['Head', 'Head2', 'Head3', 'Head4', 'Head5', 'Head6', 'Head7', 'Head8', 'Head9'],
-            widthArr: [60, 60, 60, 60, 60, 60, 60, 60, 60]
+            tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA', 'ROE', 'Head7', 'Head8', 'Head9'],
+            widthArr: [80, 80, 60, 60, 60, 60, 60, 60, 60]
         }
     }
 
     render() {
         const state = this.state;
         const tableData = [];
-        for (let i = 0; i < 30; i += 1) {
+        for (let i = 0; i < 10; i += 1) {
             const rowData = [];
             for (let j = 0; j < 9; j += 1) {
                 rowData.push(`${i}${j}`);
@@ -29,7 +29,7 @@ class HomeScreen extends React.Component {
             header: { height: 50, backgroundColor: '#537791' },
             text: { textAlign: 'center', fontWeight: '100' },
             dataWrapper: { marginTop: -1 },
-            row: { height: 30, backgroundColor: '#E7E6E1' }
+            row: { height: 51.6, backgroundColor: '#E7E6E1' }
         });
 
         return (
@@ -41,7 +41,7 @@ class HomeScreen extends React.Component {
                             <Row data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
                         </Table>
                         <ScrollView style={styles.dataWrapper}>
-                            <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr ={[30]}>
+                            <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
                                 {
                                     tableData.map((rowData, index) => (
                                         <Row
@@ -56,7 +56,7 @@ class HomeScreen extends React.Component {
                             </Table>
                         </ScrollView>
                         <Button
-                            
+
                             color='#89734c'
                             title='수치 설정하기'
                             onPress={() => this.props.navigation.navigate('Modify')} />
@@ -72,11 +72,14 @@ class HomeScreen extends React.Component {
 
 
 class DetailsScreen extends React.Component {
+
+
+
     render() {
+   
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Seonoh Detail Screen</Text>
-
+               
                 <Button
                     title='Submit'
                     onPress={() => this.props.navigation.navigate('Home')} />
@@ -118,7 +121,7 @@ class App extends React.Component {
 
 
     async componentDidMount() {
-        setTimeout(() => {
+        await setTimeout(() => {
             this.setState({ isLoaded: true });
         }, 2000);
 
