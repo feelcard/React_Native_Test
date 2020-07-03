@@ -41,21 +41,15 @@
 >
 > A~F ,G~M,N~P, R~Z  각각의 `Branch` 주소가 할당되어있고 이는 테이블의 정보가 담겨있는 테이블 블럭과는 다른 메모리 영역을 사용한다.
 >
-> ```sql
-> 
-> ```
->
-> 
->
 > `Primary key` = Not Null + Unique  => 자식테이블의 `Foreign key`
->
+> 
 > * `heap table` - partition table ( `Range` , `Hash`, `List` )
-> * `IOT` (cluster table)
->
-> `shared pool` = 오라클이 sql 문장을 수행하기위해 잡은 메모리 영역
->
-> 이는 세부적으로 라이브러리 코드라는 영역에서 sql문장의 해시값을 매핑해서 속도를 높힘
->
+>* `IOT` (cluster table)
+> 
+>`shared pool` = 오라클이 sql 문장을 수행하기위해 잡은 메모리 영역
+> 
+>이는 세부적으로 라이브러리 코드라는 영역에서 sql문장의 해시값을 매핑해서 속도를 높힘
+> 
 > 이를 soft parsing 이라 함 여기서 나온 결과를 반환하는 것을 `fetch` 라 한다
 >
 > 90%이상의 sql은 이러한 형태로 처리됨
@@ -69,6 +63,15 @@
 
 
 강사님 책 추천: 위키 구루비 사이트 접속 wiki.gurubee.net-> 
+
+모르는 단어가 있으면 모르는단어앞에 oracle 붙이고 구글에 검색하면 잘나옴
+
+SGA =시스템 글로벌 영역
+PMON = 프로세스 모니터
+SMON = 시스템 모니터
+DBWR = DB WRITER
+LGWR =
+CKPT =
 
 # 2.Oracle 사용법
 
@@ -168,13 +171,17 @@ LIKE
 TABLE 에서 찾아야할 데이터가 TABLE의 15%이상의 데이터 라면풀스캔을 하는것이 오히려 이득이다.
 
 
-SELECT 3
+SELECT 5
 
 FROM  1
 
 WHERE 2
 
-ORDER BY 4
+GROUP BY 3
+
+having  4
+
+ORDER BY 6
 
 해당 순서대로 동작함
 ```
@@ -203,6 +210,316 @@ sql1999 표준 표현식:
 case 컬럼 when 비교값 then 리턴값
 [case 컬럼 when 비교값 then 리턴값]
 [else 리턴값] end
+
+
+
+select ename, deptno, sal, decode(trunc(sal,-3),1000,sal*0.05,2000,sal*0.1,0.15) from emp;
+
+
+select count(*) , count(comm),count(deptno),count(distinct deptno)
+from emp; -- 그룹함수는 null을 무시하고, 연산에 포함시키지 않습니다.
+
+
+select avg(comm), sum(comm)/count(*)
+from emp;-- null의 유무에 따라 연산이 달라질 수 있기 때문에 항상 확인할 것
+
+select avg(nvl(comm,0)), sum(comm)/count(*)
+from emp;
+
+select job decode(sum(salay),)
+
 ```
 
 https://docs.oracle.com/cd/E11882_01/server.112/e41084/functions.htm#SQLRF006
+
+# Join
+
+* where 조인 조건 선언 --- n-1 최소 조인조건 선언 중 1개라도 누락되면 cartesian product(데이터 결합)현상이 발생
+
+* from 조인조건 
+  * equi foin(inner join) : PK와 FK 컬럼 조인조인
+
+    ```sql
+    select e.empno,e.ename,e.deptno,d.dname
+    from emp e, dept d
+    where e.deptno = d.deptno;(alias 필수)
+    
+    select empno,ename,deptno,dname
+    from emp natural join dept ;(alias 하면안됨)
+    
+    select e.empno,e.ename,d.deptno,d.dname
+    from emp e inner join dept d on e.deptno=d.deptno;(오라클의 경우만 해당됨)
+    --이러한 형태의 경우 두개 이상의 같은 컬럼이 있는경우는 
+    
+    select empno,ename,deptno,dname
+    from emp join dept using (deptno);
+    
+    --테이블 3개
+    
+    select e.last_name, d.department_name, l.city
+    from employees e,departments d,locations l
+    where e.department_id =d.department_id
+    and d.location_id = l.location_id;
+    
+    select e.last_name, d.department_name, l.city
+    from employees e 
+    join departments d
+    on e.department_id =d.department_id
+    join locations l 
+    on d.location_id = l.location_id;
+    
+    
+    
+    
+    ```
+
+    
+
+  * not equi join 
+
+    ```sql
+    select e.empno,e.ename,d.deptno,d.dname
+    from t_emp e join dept d on e.deptid=d.deptno;
+    -- 조인하려는 두게의 칼럼이름이 다를경우 join on 문법을 사용하여 위처럼 구현
+    
+    desc salgrade;
+    
+    select * from salgrade;
+    
+    desc emp;
+    
+    select a.ename,a.sal, b.grade
+    from emp a join salgrade b 
+    on a.sal between b.losal and b.hisal;
+    --이와 같이 값의 범위와도 조인할 수 있다.
+    
+    ```
+
+    
+
+  * self join:  자기참조관계의 테이블에서 가능함
+
+    ```sql
+    select e.empno, e.ename, e.mgr, m.ename
+    from emp e, emp m 
+    where e.mgr = m.empno;
+    
+    select e.empno, e.ename, e.mgr, m.ename
+    from emp e join emp m on e.mgr = m.empno;
+    
+    ```
+
+    
+
+  * outer join
+
+    ```sql
+    insert into emp (empno,ename) values (8000,'Hong');
+    
+    select e.empno, e.ename, e.deptno, d.dname
+    from emp e, dept d
+    where e.deptno =d.deptno(+);
+    
+    update emp set sal = 2000 where empno = 8000;
+    
+    select e.empno, e.ename, e.deptno, d.dname
+    from emp e, dept d
+    where e.deptno =d.deptno(+);
+    and d.name > '';
+    --조인 조건외에 다른 필터조건 (+) 연산자를 선언하지 않으면 equi join으로 수행되므로 주의하세요
+    
+    select e.empno, e.ename, e.deptno, d.dname
+    from emp e left outer join dept d
+    on e.deptno =d.deptno;
+    
+    select d.deptno, d.dname, e.empno, e.ename
+    from emp e right outer join dept d
+    on e.deptno =d.deptno
+    order by d.deptno;
+    
+    select  d.deptno, d.dname, e.empno, e.ename
+    from emp e, dept d
+    where e.deptno(+) =d.deptno
+    order by d.deptno;
+    
+    --양쪽 다하고 싶은 경우
+    
+    select d.deptno, d.dname, e.empno, e.ename
+    from emp e full outer join dept d
+    on e.deptno =d.deptno
+    order by d.deptno;
+    
+    ```
+
+    
+
+  * cartesian product(cross join):
+
+   ## 내부적 join 방식
+
+  ​	nested loop join : OLTP에서 선호(join결과가 소량인 경우)
+
+  * 가장먼저 접근하는 테이블을 drive table
+  * 조인할때 row가 적은 테이블이 drive table이 되도록 쿼리를 짠다
+  * 또한 조인할 대상들이 인덱스
+
+  ​	hash join(cost based optimizer mode)
+
+  * 조인을 하면서 테이블정보를 해시 형태로 메모리에 올려서 속도를 높인다.
+
+#  resultset 연산
+
+```sql
+SELECT employee_id, job_id,department_id
+  FROM employees
+  union all
+  SELECT employee_id, job_id,department_id
+  FROM job_history;
+  
+  SELECT employee_id, job_id,department_id
+  FROM employees
+  union 
+  SELECT employee_id, job_id,department_id
+  FROM job_history;
+  
+  SELECT employee_id, job_id,department_id
+  FROM employees
+  intersect
+  SELECT employee_id, job_id,department_id
+  FROM job_history;
+  
+  
+select to_number(null),to_char(null),avg(sal)
+from emp
+union all
+select deptno,to_char(null), avg(sal)
+from emp
+GROUP BY deptno
+union all
+select deptno,job,avg(sal)
+from emp
+group by deptno,job;
+
+-- 연산 하면서 결과의 칼럼 데이터가 없을수도 있기때문에 to_number(null),to_char(null)함수를 이용해서 데이터를 맞춰준다.
+
+select deptno,job,avg(sal)
+from emp
+group by rollup(deptno,job);
+
+
+group by rollup (a,b)
+
+group by rollup (a,b,c)-- a가 포함된 모든 경우의수
+=>group by a union all group by a,b union all group by a,b,c
+
+group by cube(a,b)-- 모든 경우의수
+=>group by a union all group by a,b union all group by b
+
+
+```
+
+
+
+
+
+# SUBQUARY
+
+* single row subquery
+
+  ``` sql
+  select *
+  from emp
+  where(job,sal) in (select job,min(sal)
+                    from emp
+                    group by job);
+  --multiple rwo, multiple column subquery
+  
+  
+  ```
+
+  
+
+* multiple row subquery
+
+* scalar subquery (1개의 값)
+
+* multiple column subquery(pair-wise 비교)
+
+* co-related subquery(상관관계 subquery)
+
+
+  # rowid
+
+  > rowid = objectid + filed +blockid + row 순서번호
+
+  select rownum,a.* from( select empno, ename ,sal from emp
+  order by sal desc) a;
+
+  이와같이 from 절에 들어간 서브쿼리가 테이블 형태가 되었을때 이를 인라인 뷰라고 한다.
+
+* EXISTS
+
+  ```sql
+  select empno, ename
+  from emp a
+  where exists (select '1'
+               from emp
+               where a.empno =mgr);
+  ```
+
+* ```sql
+  --각 부서별로 평균 급여보다 급여를 많이 받는 사원 검색
+  select ename,a.deptno,sal
+  from emp a,(select deptno, avg(sal) avgsal
+             from emp
+             group by deptno) b
+             where a.deptno =b.deptno
+             and a.sal > b.avgsal
+  ```
+
+  ```sql
+  with 별칭 as (select 문)
+  
+  .
+  .
+  .
+  
+  select ~~ from 별칭 1, 별칭 2
+  
+  -- 익명 클래스와 비슷한개념 한번쓰고 사라진다.
+  ```
+
+  
+
+# window 함수
+
+```sql
+select empno,ename,job, sal, 
+rank() over(order by sal desc ) "sal_rank"
+from emp;
+
+select empno,ename,job, sal, 
+rank() over(order by sal desc ) "sal_rank",
+rank() over(partition by job order by sal desc ) "job_rank"
+from emp;-- rank는 중복 후에 중복된 수만큼 순위가 밀림
+
+select empno,ename,job, sal, 
+rank() over(order by sal desc ) "sal_rank",
+dense_rank() over(partition by job order by sal desc ) "job_rank"
+from emp;-- dense rank는 중복수를 무시하고 순위를 지정함
+
+select empno.ename,deptno,sal
+,sum(sal) over(partition by deptno order by sal
+              rows ubounded preceding) cum_sum_sal
+ from emp;
+ 
+ 
+  with order_sal as (select rownum ron,empno,ename,deptno,sal from emp order by sal) 
+ 
+order_num as( select rownum rnum, empno,ename,deptno,sal from order_sal)
+
+select empno,ename,deptno,sal,(selcet sum(sal) from order_num where runm <=a.rnum)
+
+from order_num a;
+```
+
