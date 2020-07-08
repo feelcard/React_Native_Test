@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, TextPropTypes, TouchableOpacity } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
 import { Table, TableWrapper, Row } from 'react-native-table-component';// table Component
+import { TextInput } from 'react-native-gesture-handler';
+
+
+
+
+
 
 class HomeScreen extends React.Component {
     constructor(props) {
@@ -42,17 +48,30 @@ class HomeScreen extends React.Component {
                         </Table>
                         <ScrollView style={styles.dataWrapper}>
                             <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
+
                                 {
                                     tableData.map((rowData, index) => (
+
                                         <Row
                                             key={index}
                                             data={rowData}
                                             widthArr={state.widthArr}
                                             style={[styles.row, index % 2 && { backgroundColor: '#F7F6E7' }]}
                                             textStyle={styles.text}
-                                        />
+                                            onPress={() => this.props.navigation.navigate('Details')}
+                                        >
+                                            if(index % 10 == 0){
+                                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Details')}>
+
+                                                </TouchableOpacity>
+                                            }
+
+                                        </Row>
+
+
                                     ))
                                 }
+
                             </Table>
                         </ScrollView>
                         <Button
@@ -70,23 +89,67 @@ class HomeScreen extends React.Component {
 
 }
 
+class Greeting extends Component {
+    render() {
+        return (
+            <View style={{ alignItems: 'center' }}>
+                <Text> {this.props.name}</Text>
+            </View>
+        );
+    }
+}
+
 
 class DetailsScreen extends React.Component {
 
 
 
     render() {
-   
+        // const state = this.state;
+        function submitFunction() {
+            //this.props.navigation.navigate('Home') ;
+
+
+        }
+
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-               
+                <TextInput >            </TextInput>
                 <Button
                     title='Submit'
                     onPress={() => this.props.navigation.navigate('Home')} />
             </View>
         );
     }
+
+
 }
+
+class DetailsScreen2 extends React.Component {
+
+
+
+    render() {
+        // const state = this.state;
+        function submitFunction() {
+            //this.props.navigation.navigate('Home') ;
+
+
+        }
+
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <TextInput >DetailsScreen</TextInput>
+                
+            </View>
+        );
+    }
+
+
+}
+
+
+
 
 
 const AppNavigator = createStackNavigator(
@@ -103,6 +166,12 @@ const AppNavigator = createStackNavigator(
                 title: "Modify",
             },
         },
+        Details: {
+            screen: DetailsScreen,
+            navigationOptions: {
+                title: "Details",
+            },
+        }
 
     },
     {
@@ -111,7 +180,6 @@ const AppNavigator = createStackNavigator(
 )
 
 const Container = createAppContainer(AppNavigator)
-
 
 
 class App extends React.Component {
@@ -145,5 +213,15 @@ class App extends React.Component {
         )
     }
 }
+
+// App.propTypes = {
+//     per: PropTypes.number,
+//     por: PropTypes.number,
+//     lang: PropTypes.string,
+//   };
+
+// App.defaultProps = {
+//     lang: 'Javascript',
+//   };
 
 export default App
