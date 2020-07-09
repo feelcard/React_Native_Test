@@ -59,15 +59,10 @@ class HomeScreen extends React.Component {
                                             style={[styles.row, index % 2 && { backgroundColor: '#F7F6E7' }]}
                                             textStyle={styles.text}
                                             onPress={() => this.props.navigation.navigate('Details')}
-                                        >
-                                            if(index % 10 == 0){
-                                                <TouchableOpacity onPress={() => this.props.navigation.navigate('Details')}>
+                                        />
+                        
 
-                                                </TouchableOpacity>
-                                            }
-
-                                        </Row>
-
+                                        
 
                                     ))
                                 }
@@ -140,7 +135,7 @@ class DetailsScreen2 extends React.Component {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <TextInput >DetailsScreen</TextInput>
-                
+
             </View>
         );
     }
