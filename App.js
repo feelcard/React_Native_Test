@@ -5,6 +5,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
 import { Table, TableWrapper, Row } from 'react-native-table-component';// table Component
 import { TextInput } from 'react-native-gesture-handler';
+import { block } from 'react-native-reanimated';
 
 
 
@@ -14,16 +15,18 @@ import { TextInput } from 'react-native-gesture-handler';
 class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
+        //  console.log(props);
         this.state = {
             tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA', 'ROE', 'Head7', 'Head8', 'Head9'],
-            widthArr: [80, 80, 60, 60, 60, 60, 60, 60, 60]
+            widthArr: [81, 81, 55, 55, 55, 55, 55, 55, 55],
+            setData: (num) => this.widthArr[0] = num,
         }
     }
 
     render() {
         const state = this.state;
         const tableData = [];
-        for (let i = 0; i < 10; i += 1) {
+        for (let i = 0; i < 20; i += 1) {
             const rowData = [];
             for (let j = 0; j < 9; j += 1) {
                 rowData.push(`${i}${j}`);
@@ -40,9 +43,9 @@ class HomeScreen extends React.Component {
 
         return (
             <View style={styles.container}>
-                <ScrollView horizontal={true}>
+                <Text style={styles.text} fontWeight={300} >DIQ</Text>
+                <ScrollView Virtical={true} horizontal={true}>
                     <View>
-                        <Text style={{ fontSize: 30 }}>DO IT Quant!</Text>
                         <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
                             <Row data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
                         </Table>
@@ -51,18 +54,18 @@ class HomeScreen extends React.Component {
 
                                 {
                                     tableData.map((rowData, index) => (
-
                                         <Row
-                                            key={index}
+                                            navigation={this.props.navigation}
+                                            rowKey={index}
                                             data={rowData}
                                             widthArr={state.widthArr}
                                             style={[styles.row, index % 2 && { backgroundColor: '#F7F6E7' }]}
                                             textStyle={styles.text}
-                                            onPress={() => this.props.navigation.navigate('Details')}
-                                        />
-                        
 
-                                        
+                                        />
+
+
+
 
                                     ))
                                 }
@@ -72,7 +75,7 @@ class HomeScreen extends React.Component {
                         <Button
 
                             color='#89734c'
-                            title='수치 설정하기'
+                            title='수치 설정하기                                                                 '
                             onPress={() => this.props.navigation.navigate('Modify')} />
                     </View>
                 </ScrollView>
@@ -101,19 +104,50 @@ class DetailsScreen extends React.Component {
 
     render() {
         // const state = this.state;
-        function submitFunction() {
-            //this.props.navigation.navigate('Home') ;
-
-
-        }
-
+        const statusStyle= { flex: 1, flexDirection: 'row', flexWrap: 'wrap',  height: 100 };
+        const inputStyle= {  fontSize: 35, textAlign: 'center', borderBottomColor:'black', borderBottomWidth: 3};
         return (
+
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <TextInput >            </TextInput>
+                <ScrollView showsVerticalScrollIndicator={false} Virtical={true} >
+                  <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>PER       :       </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>PBR       :       </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PBR'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                </View>
+                <View style={statusStyle}>
+                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                </View>
+                </ScrollView>
                 <Button
                     title='Submit'
                     onPress={() => this.props.navigation.navigate('Home')} />
             </View>
+
         );
     }
 
@@ -162,7 +196,7 @@ const AppNavigator = createStackNavigator(
             },
         },
         Details: {
-            screen: DetailsScreen,
+            screen: DetailsScreen2,
             navigationOptions: {
                 title: "Details",
             },
@@ -204,19 +238,11 @@ class App extends React.Component {
             >
 
                 <Container />
+
             </AnimatedSplash>
         )
     }
 }
 
-// App.propTypes = {
-//     per: PropTypes.number,
-//     por: PropTypes.number,
-//     lang: PropTypes.string,
-//   };
-
-// App.defaultProps = {
-//     lang: 'Javascript',
-//   };
 
 export default App
