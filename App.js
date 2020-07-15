@@ -5,7 +5,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
 import { Table, TableWrapper, Row } from 'react-native-table-component';// table Component
 import { TextInput } from 'react-native-gesture-handler';
-import { block } from 'react-native-reanimated';
+import { Modal } from 'react-native-paper';
 
 
 
@@ -15,13 +15,19 @@ import { block } from 'react-native-reanimated';
 class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
-        //  console.log(props);
         this.state = {
             tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA', 'ROE', 'Head7', 'Head8', 'Head9'],
             widthArr: [81, 81, 55, 55, 55, 55, 55, 55, 55],
             setData: (num) => this.widthArr[0] = num,
+            isVisible: false,
+            overflow:'hidden'
         }
     }
+    setVisibleTrue = () => { this.setState({ isVisible: true }) };
+
+    setVisibleFalse = () => { this.setState({ isVisible: false }) };
+
+
 
     render() {
         const state = this.state;
@@ -37,48 +43,99 @@ class HomeScreen extends React.Component {
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
             header: { height: 50, backgroundColor: '#537791' },
             text: { textAlign: 'center', fontWeight: '100' },
+            discription:{textAlign: 'left', fontSize: 30 , borderBottomColor:'black', borderBottomWidth:2},
             dataWrapper: { marginTop: -1 },
-            row: { height: 51.6, backgroundColor: '#E7E6E1' }
+            row: { height: 51.6, backgroundColor: '#E7E6E1' },
+            modal: {
+                // flex: 1,
+                // alignItems: 'center',
+                backgroundColor: '#ffffff',
+                borderWidth:5,
+                borderColor:'#ffffff',//#8D9093
+                padding: 20,
+                paddingHorizontal:10,
+               
+                borderStyle:'dashed',
+                borderRadius: 2,
+                borderStartColor:'red',
+                overflow:'visible'
+            },
+            test:{borderStyle:'solid',borderWidth:5,borderColor:'white',padding:0, marginHorizontal: 30, borderRadius: 2}
+
         });
 
         return (
+
+
             <View style={styles.container}>
-                <Text style={styles.text} fontWeight={300} >DIQ</Text>
-                <ScrollView Virtical={true} horizontal={true}>
-                    <View>
-                        <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
-                            <Row data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
-                        </Table>
-                        <ScrollView style={styles.dataWrapper}>
-                            <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
-
-                                {
-                                    tableData.map((rowData, index) => (
-                                        <Row
-                                            navigation={this.props.navigation}
-                                            rowKey={index}
-                                            data={rowData}
-                                            widthArr={state.widthArr}
-                                            style={[styles.row, index % 2 && { backgroundColor: '#F7F6E7' }]}
-                                            textStyle={styles.text}
-
-                                        />
-
-
-
-
-                                    ))
-                                }
-
+                <View style={StyleSheet.create({
+                    container: { flex: 1, paddingTop: 10, backgroundColor: '#fff' }
+                }).container}>
+                    <ScrollView Virtical={true} horizontal={true}>
+                        <View>
+                            <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
+                                <Row header={true} setVisibleTrue={this.setVisibleTrue} data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
                             </Table>
-                        </ScrollView>
-                        <Button
+                            <ScrollView style={styles.dataWrapper}>
+                                <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
 
-                            color='#89734c'
-                            title='수치 설정하기                                                                 '
-                            onPress={() => this.props.navigation.navigate('Modify')} />
+                                    {
+                                        tableData.map((rowData, index) => (
+                                            <Row
+                                                navigation={this.props.navigation}
+                                                rowKey={index}
+                                                data={rowData}
+                                                widthArr={state.widthArr}
+                                                style={[styles.row, index % 2 && { backgroundColor: '#F7F6E7' }]}
+                                                textStyle={styles.text}
+                                              
+
+                                            />
+
+
+
+
+                                        ))
+                                    }
+
+                                </Table>
+                            </ScrollView>
+
+                        </View>
+                    </ScrollView>
+                    <Button
+
+                        color='#89734c'
+                        title='수치 설정하기'
+                        onPress={() => this.props.navigation.navigate('Modify')} />
+
+                </View>
+                <Modal animationType={"slide"} transparent={false}
+                    visible={this.state.isVisible}
+                    onRequestClose={() => { console.log("Modal has been closed.") }}>
+                    {/*All views of Modal*/}
+                    {/*Animation can be slide, slide, none*/}
+                    <View style={styles.test}>
+                    <View style={styles.modal}>
+                        <Text style={styles.discription} onPress={
+                            this.setVisibleFalse
+                        }>PER 이란?</Text>
+                        <Text>description1</Text>
+                        <Text>description2</Text>
+                        <Text>description3</Text>
+                        <Text>description4</Text>
+                        <Text>description5</Text>
+                        <Text>description6</Text>
+                        <Text>description7</Text>
+                        <Text>description8</Text>
+                        {/* <Text onPress={
+                            this.setState({overflow:'visible'})
+                        }>description9</Text> */}
+
+
                     </View>
-                </ScrollView>
+                    </View>
+                </Modal>
             </View>
         )
 
@@ -104,44 +161,44 @@ class DetailsScreen extends React.Component {
 
     render() {
         // const state = this.state;
-        const statusStyle= { flex: 1, flexDirection: 'row', flexWrap: 'wrap',  height: 100 };
-        const inputStyle= {  fontSize: 35, textAlign: 'center', borderBottomColor:'black', borderBottomWidth: 3};
+        const statusStyle = { flex: 1, flexDirection: 'row', flexWrap: 'wrap', height: 100 };
+        const inputStyle = { fontSize: 35, textAlign: 'center', borderBottomColor: 'black', borderBottomWidth: 3 };
         return (
 
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <ScrollView showsVerticalScrollIndicator={false} Virtical={true} >
-                  <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>PER       :       </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>PBR       :       </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PBR'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                </View>
-                <View style={statusStyle}>
-                    <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                    <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>PER       :       </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>PBR       :       </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PBR'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                    </View>
+                    <View style={statusStyle}>
+                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
+                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
+                    </View>
                 </ScrollView>
                 <Button
                     title='Submit'
