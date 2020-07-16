@@ -27,7 +27,7 @@ class HomeScreen extends React.Component {
 
     setVisibleFalse = () => { this.setState({ isVisible: false }) };
 
-
+    
 
     render() {
         const state = this.state;
@@ -41,11 +41,11 @@ class HomeScreen extends React.Component {
         }
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
-            header: { height: 50, backgroundColor: '#537791' },
+            header: { height: 50, backgroundColor: '#ffb81c' },
             text: { textAlign: 'center', fontWeight: '100' },
             discription:{textAlign: 'left', fontSize: 30 , borderBottomColor:'black', borderBottomWidth:2},
             dataWrapper: { marginTop: -1 },
-            row: { height: 51.6, backgroundColor: '#E7E6E1' },
+            row: { height: 51.6, backgroundColor: '#ECF0F1' },
             modal: {
                 // flex: 1,
                 // alignItems: 'center',
@@ -54,10 +54,8 @@ class HomeScreen extends React.Component {
                 borderColor:'#ffffff',//#8D9093
                 padding: 20,
                 paddingHorizontal:10,
-               
-                borderStyle:'dashed',
-                borderRadius: 2,
-                borderStartColor:'red',
+                borderStyle:'solid',
+                borderColor:'#ffb81c',
                 overflow:'visible'
             },
             test:{borderStyle:'solid',borderWidth:5,borderColor:'white',padding:0, marginHorizontal: 30, borderRadius: 2}
@@ -86,9 +84,9 @@ class HomeScreen extends React.Component {
                                                 rowKey={index}
                                                 data={rowData}
                                                 widthArr={state.widthArr}
-                                                style={[styles.row, index % 2 && { backgroundColor: '#F7F6E7' }]}
+                                                style={[styles.row, index % 2 && { backgroundColor: '#F7F9F9' }]}
                                                 textStyle={styles.text}
-                                              
+                                             
 
                                             />
 
