@@ -43,7 +43,7 @@ class HomeScreen extends React.Component {
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
             header: { height: 50, backgroundColor: '#ffb81c' },
             text: { textAlign: 'center', fontWeight: '100' },
-            discription:{textAlign: 'left', fontSize: 30 , borderBottomColor:'black', borderBottomWidth:2},
+            discription:{textAlign: 'left', fontSize: 25 , backgroundColor:'#5e514d',color:'white',padding:3,paddingHorizontal:20, position:'absolute',translateX:-20,translateY:10},
             dataWrapper: { marginTop: -1 },
             row: { height: 51.6, backgroundColor: '#ECF0F1' },
             modal: {
@@ -108,16 +108,21 @@ class HomeScreen extends React.Component {
                         onPress={() => this.props.navigation.navigate('Modify')} />
 
                 </View>
-                <Modal animationType={"slide"} transparent={false}
+                <Modal animationType={"slide" } transparent={false } onDismiss ={this.setVisibleFalse } 
                     visible={this.state.isVisible}
                     onRequestClose={() => { console.log("Modal has been closed.") }}>
                     {/*All views of Modal*/}
                     {/*Animation can be slide, slide, none*/}
                     <View style={styles.test}>
+               
                     <View style={styles.modal}>
-                        <Text style={styles.discription} onPress={
+                    <Text style={styles.discription} onPress={
                             this.setVisibleFalse
                         }>PER 이란?</Text>
+                        <View>
+                        <Text></Text>
+                        <Text></Text>
+                 
                         <Text>description1</Text>
                         <Text>description2</Text>
                         <Text>description3</Text>
@@ -126,6 +131,8 @@ class HomeScreen extends React.Component {
                         <Text>description6</Text>
                         <Text>description7</Text>
                         <Text>description8</Text>
+                        </View>
+                      
                         {/* <Text onPress={
                             this.setState({overflow:'visible'})
                         }>description9</Text> */}
@@ -271,7 +278,7 @@ class App extends React.Component {
         isLoaded: false,
     }
 
-
+    
     async componentDidMount() {
         await setTimeout(() => {
             this.setState({ isLoaded: true });
@@ -291,7 +298,7 @@ class App extends React.Component {
                 logoWidht={150}
 
             >
-
+                {console.disableYellowBox = true}
                 <Container />
 
             </AnimatedSplash>
