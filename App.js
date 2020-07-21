@@ -4,7 +4,7 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
 import { Table, TableWrapper, Row, Col} from 'react-native-table-component';// table Component
-import { TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native-paper';
 import { Modal } from 'react-native-paper';
 
 
@@ -74,7 +74,7 @@ class HomeScreen extends React.Component {
                 }).container}>
                      <View style={styles.semiheader}>
   <Text style={styles.headtextmain}>main</Text>
-  <Text style={styles.headtexttable}>table</Text>
+  <Text style={styles.headtexttable}>Table</Text>
 </View>
                     <ScrollView Virtical={true} horizontal={true}>
                         <View>
@@ -154,22 +154,14 @@ class HomeScreen extends React.Component {
 
 }
 
-class Greeting extends Component {
-    render() {
-        return (
-            <View style={{ alignItems: 'center' }}>
-                <Text> {this.props.name}</Text>
-            </View>
-        );
-    }
-}
-
 
 class DetailsScreen extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-          offset: {}
+          per:1,
+          pbr:1,
+          roa:1,
         }
         this.onScroll = this.onScroll.bind(this)
       }
@@ -187,44 +179,50 @@ class DetailsScreen extends React.Component {
     render() {
         // const state = this.state;
         const statusStyle = { flex: 1, flexDirection: 'row', flexWrap: 'wrap', height: 100 };
-        const inputStyle = { fontSize: 35, textAlign: 'center', borderBottomColor: 'black', borderBottomWidth: 3 };
+        const inputStyle = { fontSize: 35, textAlign: 'center'};
+        const semiheader ={flexDirection:'row', flexWrap:'wrap',padding:15};
         return (
 
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ScrollView showsVerticalScrollIndicator={false} Virtical={true} onScroll={this.onScroll} >
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' ,backgroundColor:'white'}}>
+                <ScrollView showsVerticalScrollIndicator={false} Virtical={true}>
                     
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>PER       :       </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>PBR       :       </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PBR'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                    </View>
-                    <View style={statusStyle}>
-                        <Text style={{ fontSize: 35 }}>ROA       :      </Text>
-                        <TextInput style={inputStyle} keyboardType='number-pad' placeholder='ROA'></TextInput>
-                    </View>
+                    
+                        <View style={semiheader}>
+                            <View>
+                            <Text>PER:{this.state.per}</Text>
+                            <TextInput mode='outlined' style={inputStyle} keyboardType='number-pad' placeholder='PER' onChangeText={per =>{per==''?per=0:null; this.setState({per});}} defaultValue={this.state.per}></TextInput>
+                            </View>
+                            <View>
+                            <Text>PBR:{this.state.pbr}</Text>
+                            <TextInput mode='outlined' style={inputStyle} keyboardType='number-pad' placeholder='PBR' onChangeText={pbr =>{pbr==''?pbr=0:null; this.setState({pbr});}} defaultValue={this.state.pbr}></TextInput>
+                            </View>
+                            <View>
+                            <Text>ROA:{this.state.roa}</Text>
+                            <TextInput mode='outlined' style={inputStyle} keyboardType='number-pad' placeholder='ROA' onChangeText={roa =>{roa==''?roa=0:null; this.setState({roa});}} defaultValue={this.state.roa}></TextInput>
+                            </View>
+                        </View>
+                        
+                        <View style={semiheader}>
+                            <View>
+                            <Text>PER : </Text>
+                            <TextInput mode='outlined' style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
+                            </View>
+                            <View>
+                            <Text>PER</Text>
+                            <TextInput mode='outlined' style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
+                            </View>
+                            <View>
+                            <Text>PER</Text>
+                            <TextInput mode='outlined' style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
+                            </View>
+                        </View>
+                        
+                        <View >
+                        <Text>ROA:{this.state.roa}</Text>
+                            <TextInput mode='outlined' style={{ fontSize: 35, textAlign: 'center'}} keyboardType='number-pad' placeholder='ROA' onChangeText={roa =>{roa==''?roa=0:null; this.setState({roa});}} defaultValue={this.state.roa}></TextInput>
+
+                        </View>
+                        
                 </ScrollView>
                 <Button
                     title='Submit'
