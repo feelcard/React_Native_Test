@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, TextPropTypes, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
-import { Table, TableWrapper, Row } from 'react-native-table-component';// table Component
+import { Table, TableWrapper, Row, Col} from 'react-native-table-component';// table Component
 import { TextInput } from 'react-native-gesture-handler';
 import { Modal } from 'react-native-paper';
 
@@ -19,8 +19,7 @@ class HomeScreen extends React.Component {
             tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA', 'ROE', 'Head7', 'Head8', 'Head9'],
             widthArr: [81, 81, 55, 55, 55, 55, 55, 55, 55],
             setData: (num) => this.widthArr[0] = num,
-            isVisible: false,
-            overflow:'hidden'
+            isVisible: false
         }
     }
     setVisibleTrue = () => { this.setState({ isVisible: true }) };
@@ -46,6 +45,9 @@ class HomeScreen extends React.Component {
             discription:{textAlign: 'left', fontSize: 25 , backgroundColor:'#5e514d',color:'white',padding:3,paddingHorizontal:20, position:'absolute',translateX:-20,translateY:10},
             dataWrapper: { marginTop: -1 },
             row: { height: 51.6, backgroundColor: '#ECF0F1' },
+            semiheader:{flexDirection:'row', flexWrap:'wrap',padding:15, borderBottomWidth:3 , borderBottomColor:'gray',marginBottom: 5},
+            headtextmain:{flex:1,textAlign:'center',paddingRight:15,borderBottomColor:'#ffb81c',borderBottomWidth:0},
+            headtexttable:{flex:1,textAlign:'center',paddingLeft:15,borderBottomColor:'#ffb81c',borderBottomWidth:3},
             modal: {
                 // flex: 1,
                 // alignItems: 'center',
@@ -66,15 +68,20 @@ class HomeScreen extends React.Component {
 
 
             <View style={styles.container}>
+               
                 <View style={StyleSheet.create({
                     container: { flex: 1, paddingTop: 10, backgroundColor: '#fff' }
                 }).container}>
+                     <View style={styles.semiheader}>
+  <Text style={styles.headtextmain}>main</Text>
+  <Text style={styles.headtexttable}>table</Text>
+</View>
                     <ScrollView Virtical={true} horizontal={true}>
                         <View>
                             <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
                                 <Row header={true} setVisibleTrue={this.setVisibleTrue} data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
                             </Table>
-                            <ScrollView style={styles.dataWrapper}>
+                            <ScrollView style={styles.dataWrapper}  onMoveShouldSetResponder={false}>
                                 <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
 
                                     {
@@ -86,8 +93,6 @@ class HomeScreen extends React.Component {
                                                 widthArr={state.widthArr}
                                                 style={[styles.row, index % 2 && { backgroundColor: '#F7F9F9' }]}
                                                 textStyle={styles.text}
-                                             
-
                                             />
 
 
@@ -161,7 +166,22 @@ class Greeting extends Component {
 
 
 class DetailsScreen extends React.Component {
-
+    constructor(props){
+        super(props);
+        this.state = {
+          offset: {}
+        }
+        this.onScroll = this.onScroll.bind(this)
+      }
+      
+      onScroll(event){
+        var currentOffset = event.nativeEvent.contentOffset.y;
+        var direction = currentOffset > this.state.offset ? currentOffset+' down '+this.state.offset  : currentOffset+' up '+this.state.offset;
+        this.setState({
+              offset : currentOffset
+            }),
+        Alert.alert(direction);
+      }
 
 
     render() {
@@ -171,7 +191,8 @@ class DetailsScreen extends React.Component {
         return (
 
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ScrollView showsVerticalScrollIndicator={false} Virtical={true} >
+                <ScrollView showsVerticalScrollIndicator={false} Virtical={true} onScroll={this.onScroll} >
+                    
                     <View style={statusStyle}>
                         <Text style={{ fontSize: 35 }}>PER       :       </Text>
                         <TextInput style={inputStyle} keyboardType='number-pad' placeholder='PER'></TextInput>
@@ -208,6 +229,7 @@ class DetailsScreen extends React.Component {
                 <Button
                     title='Submit'
                     onPress={() => this.props.navigation.navigate('Home')} />
+
             </View>
 
         );
@@ -229,10 +251,27 @@ class DetailsScreen2 extends React.Component {
         }
 
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <TextInput >DetailsScreen</TextInput>
-
+            <View>
+            <View style={{ flex: 1, alignItems: 'center' }}> 
+                <Text>기업 이름</Text>
+                <Text>종목 코드</Text>
+                <Text>종가</Text>
+                <Button title="Save CilpBoard"></Button>
+                </View>
+                <ScrollView>
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                <Text>기업 이름</Text>
+                <Text>기업 이름</Text>
+                <Text>기업 이름</Text>
+                <Text>기업 이름</Text>
+                <Text>기업 이름</Text>
+                <Text>기업 이름</Text>
+                <Text>기업 이름</Text>     
+                </View>       
+                </ScrollView>
+            
             </View>
+            
         );
     }
 
@@ -248,19 +287,24 @@ const AppNavigator = createStackNavigator(
         Home: {
             screen: HomeScreen,
             navigationOptions: {
-                headerShown: false,
+                title: "Table",
+                headerTitleAlign:'center'
             },
         },
         Modify: {
             screen: DetailsScreen,
             navigationOptions: {
                 title: "Modify",
+                headerTitleAlign:'center',
+                animationEnabled: false
             },
         },
         Details: {
             screen: DetailsScreen2,
             navigationOptions: {
                 title: "Details",
+                animationEnabled: false,
+                headerTitleAlign:'center'
             },
         }
 
