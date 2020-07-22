@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
 import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator,TransitionPresets } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
 import { Table, TableWrapper, Row, Col } from 'react-native-table-component';// table Component
 import ViewPager from '@react-native-community/viewpager';
@@ -21,19 +21,33 @@ class HomeScreen extends React.Component {
         super(props);
         this.state = {
             tableHead: [Hello('기업이름'), Hello('상품코드'), Hello('PER'), Hello('PBR'), Hello('ROA'), Hello('ROE'), Hello('Head7'), Hello('Head8'), Hello('Head9')],
-            widthArr: [81, 81, 55, 55, 55, 55, 55, 55, 55],
-            setData: (num) => this.widthArr[0] = num,
-            isVisible: false
+            widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
+            isVisible: false,
+            pageState:true
+            
         }
     }
     setVisibleTrue = () => { this.setState({ isVisible: true }) };
 
     setVisibleFalse = () => { this.setState({ isVisible: false }) };
 
-
+    viewPager = React.createRef();
 
     render() {
         const state = this.state;
+        const getApiAsync = async () => {
+            try {
+                let response = await fetch(
+                'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
+                );
+                let json = await response.json();
+                console.log(JSON.stringify(json))
+                return json;
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        console.log(JSON.stringify(getApiAsync()));
         const tableData = [];
         for (let i = 0; i < 20; i += 1) {
             const rowData = [];
@@ -45,7 +59,7 @@ class HomeScreen extends React.Component {
         }
 
         const styles = StyleSheet.create({
-            container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff' },
+            container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff',marginHorizontal:10, alignContent:'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
             text: { textAlign: 'center', fontWeight: '100' },
             discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
@@ -57,6 +71,7 @@ class HomeScreen extends React.Component {
             modal: {
                 // flex: 1,
                 // alignItems: 'center',
+
                 backgroundColor: '#ffffff',
                 borderWidth: 5,
                 borderColor: '#ffffff',//#8D9093
@@ -67,8 +82,13 @@ class HomeScreen extends React.Component {
                 overflow: 'visible'
             },
             test: { borderStyle: 'solid', borderWidth: 5, borderColor: 'white', padding: 0, marginHorizontal: 30, borderRadius: 2 }
-
+            
         });
+
+        pageChange = (page) =>{
+            this.viewPager.current.setPage(page);
+            this.setState({pageState:!this.state.pageState});
+        }
 
         return (
 
@@ -78,14 +98,13 @@ class HomeScreen extends React.Component {
                 <View style={StyleSheet.create({
                     container: { flex: 1, paddingTop: 10, backgroundColor: '#fff' }
                 }).container}>
-
-
-                    <ViewPager style={styles.container} initialPage={0} orientation='horizontal' transitionStyle='curl'>
-                        <View key="1">
-                            <View style={styles.semiheader}>
-                                <Text style={styles.headtextmain}>main</Text>
-                                <Text style={styles.headtexttable}>Table</Text>
+                      <View style={styles.semiheader}>
+                                <Text style={styles.headtextmain} onPress= {()=>{state.pageState&&pageChange(1)}}>main</Text>
+                                <Text style={styles.headtexttable} onPress= {()=>{!state.pageState&&pageChange(0)}}>Table</Text>
                             </View>
+                         
+                    <ViewPager ref ={this.viewPager} style={styles.container} initialPage={1} orientation='horizontal' transitionStyle='curl' pageMargin={10}>
+                        <View key="1">
                             <ScrollView Virtical={true} horizontal={true}>
                                 <View>
                                     <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
@@ -96,7 +115,6 @@ class HomeScreen extends React.Component {
 
                                             {
                                                 tableData.map((rowData, index) => (
-
                                                     <Row
                                                         navigation={this.props.navigation}
                                                         rowKey={index}
@@ -175,7 +193,7 @@ class HomeScreen extends React.Component {
 
 const Hello = (name) => {
     return (
-        <View><Text>Hello {name}</Text></View>
+        <View><Text>{name}</Text></View>
     );
 }
 
@@ -186,7 +204,7 @@ class ModifyScreen extends React.Component {
     render() {
 
         return (
-            <Modify />
+            <Modify navigation = {this.props.navigation}/>
         );
     }
 
@@ -214,6 +232,7 @@ class DetailsScreen extends React.Component {
 
 const AppNavigator = createStackNavigator(
     {
+        
         Home: {
             screen: HomeScreen,
             navigationOptions: {
@@ -226,15 +245,15 @@ const AppNavigator = createStackNavigator(
             navigationOptions: {
                 title: "Modify",
                 headerTitleAlign: 'center',
-                animationEnabled: false
+               
             },
         },
         Details: {
             screen: DetailsScreen,
             navigationOptions: {
                 title: "Details",
-                animationEnabled: false,
-                headerTitleAlign: 'center'
+                headerTitleAlign: 'center',
+               
             },
         }
 
@@ -254,14 +273,16 @@ class App extends React.Component {
 
 
     async componentDidMount() {
-        await setTimeout(() => {
+       
+         setTimeout(() => {
             this.setState({ isLoaded: true });
-        }, 2000);
+        }, 3000);
 
 
     }
 
     render() {
+        
         return (
             <AnimatedSplash
                 translucent={true}
@@ -271,7 +292,7 @@ class App extends React.Component {
                 logoHeight={150}
                 logoWidht={150}
 
-            >
+            >   
                 {console.disableYellowBox = true}
                 <Container />
 
