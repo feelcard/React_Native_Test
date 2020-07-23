@@ -7,6 +7,7 @@ import { Table, TableWrapper, Row, Col } from 'react-native-table-component';// 
 import ViewPager from '@react-native-community/viewpager';
 import { Modal } from 'react-native-paper';
 import { Card } from "@paraboly/react-native-card";
+import AsyncStorage from '@react-native-community/async-storage';
 import { Modify } from './Modify';
 import { Detail } from './Detail';
 
@@ -35,19 +36,7 @@ class HomeScreen extends React.Component {
 
     render() {
         const state = this.state;
-        const getApiAsync = async () => {
-            try {
-                let response = await fetch(
-                'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
-                );
-                let json = await response.json();
-                console.log(JSON.stringify(json))
-                return json;
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        console.log(JSON.stringify(getApiAsync()));
+        
         const tableData = [];
         for (let i = 0; i < 20; i += 1) {
             const rowData = [];
@@ -135,14 +124,14 @@ class HomeScreen extends React.Component {
                         <View key="2">
                            
                                     <Card
+                                        styles={{ height: 200 }}
                                         title="Title"
-                                        iconName="home"
+                                        iconName="numeric-1"
                                         defaultTitle=""
-                                        iconType="Entypo"
+                                        iconType ="MaterialCommunityIcons"
+                                        iconSize={50}
                                         defaultContent=""
                                         onPress={() => { }}
-                                        topRightText="50/301"
-                                        bottomRightText="30 km"
                                         content="Lorem ipsum dolor sit."
                                     />
                         </View>
@@ -269,14 +258,49 @@ const Container = createAppContainer(AppNavigator)
 class App extends React.Component {
     state = {
         isLoaded: false,
+        loadingText:'반갑습니다'
     }
 
 
+
     async componentDidMount() {
+        const getApiAsync = async (setLoadingText =(text)=>{this.setState({loadingText:text}) }) => {
+            try {
+                
+                let response = await fetch(
+                'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
+                );
+                let json = await response.json();
+                const companyData = await JSON.parse(JSON.stringify(json));
+               
+                AsyncStorage.setItem('updated_date','');
+                await AsyncStorage.getItem('updated_date').then(function(data) {
+                   console.log('updated_date:'+data);
+            
+                })
+                
+              const worker = new Worker('Received_Data.js');
+               worker.onmessage = function(event) {
+                setLoadingText(event.data);
+              };
+                setTimeout(() => {
+                    this.setState({loadingText:'Do It Quent'});
+                    setTimeout(() => {
+                        this.setState({  loadingText:'',isLoaded: true });
+                         }, 2500);
+                     }, 2000);
+               
+
+               
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        getApiAsync();
        
-         setTimeout(() => {
-            this.setState({ isLoaded: true });
-        }, 3000);
+        //  setTimeout(() => {
+        //     this.setState({ isLoaded: true });
+        // }, 3000);
 
 
     }
@@ -291,7 +315,7 @@ class App extends React.Component {
                 backgroundColor={"#ffcc22"}
                 logoHeight={150}
                 logoWidht={150}
-
+                loadingText={this.state.loadingText}
             >   
                 {console.disableYellowBox = true}
                 <Container />
