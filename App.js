@@ -3,19 +3,16 @@ import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert,
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator, TransitionPresets } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
-import { Table, TableWrapper, Row, Col } from 'react-native-table-component';// table Component
-import ViewPager from '@react-native-community/viewpager';
-import { Modal } from 'react-native-paper';
-import { Card } from "@paraboly/react-native-card";
+import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Thread } from 'react-native-threads';
-import { self } from 'react-native-threads';
 import { Modify } from './Modify';
 import { Detail } from './Detail';
-import WorkManager from 'react-native-background-worker';
+import { CardPage } from './CardPage';
+import { TablePage } from './TablePage';
 
 
-
+let navigationForSend;
 
 
 
@@ -23,11 +20,11 @@ import WorkManager from 'react-native-background-worker';
 class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
+        navigationForSend=this.props.navigation;
         this.state = {
-            tableHead: [Hello('기업이름'), Hello('상품코드'), Hello('PER'), Hello('PBR'), Hello('ROA'), Hello('ROE'), Hello('Head7'), Hello('Head8'), Hello('Head9')],
-            widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
             isVisible: false,
             pageState: true
+            
 
         }
     }
@@ -35,20 +32,10 @@ class HomeScreen extends React.Component {
 
     setVisibleFalse = () => { this.setState({ isVisible: false }) };
 
-    viewPager = React.createRef();
-
+  
     render() {
         const state = this.state;
-
-        const tableData = [];
-        for (let i = 0; i < 20; i += 1) {
-            const rowData = [];
-            for (let j = 0; j < 9; j += 1) {
-                rowData.push(`${i}${j}`);
-
-            }
-            tableData.push(rowData);
-        }
+        const Tab = createMaterialTopTabNavigator();
 
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
@@ -77,105 +64,26 @@ class HomeScreen extends React.Component {
 
         });
 
-        pageChange = (page) => {
-            this.viewPager.current.setPage(page);
-            this.setState({ pageState: !this.state.pageState });
-        }
-
+        
+       
         return (
+        <NavigationContainer>
+        <Tab.Navigator
+        tabBarOptions={{
+            activeTintColor: '#ffb81c',
+            inactiveTintColor :'black',
+            labelStyle: { fontSize: 12 },
+            indicatorStyle  :{borderColor:'#ffb81c', borderWidth:1}
+          }} 
+          >
+              { console.log('HomeScreen : '+JSON.stringify(this.props))}
+            <Tab.Screen name="Card" component={CardScreen} />
+            <Tab.Screen name="Table" component={TableScreen}  />
+          </Tab.Navigator>
+          </NavigationContainer>
+       
 
-
-            <View style={styles.container}>
-
-                <View style={StyleSheet.create({
-                    container: { flex: 1, paddingTop: 10, backgroundColor: '#fff' }
-                }).container}>
-                    <View style={styles.semiheader}>
-                        <Text style={styles.headtextmain} onPress={() => { state.pageState && pageChange(1) }}>main</Text>
-                        <Text style={styles.headtexttable} onPress={() => { !state.pageState && pageChange(0) }}>Table</Text>
-                    </View>
-
-                    <ViewPager ref={this.viewPager} style={styles.container} initialPage={1} orientation='horizontal' transitionStyle='curl' pageMargin={10}>
-                        <View key="1">
-                            <ScrollView Virtical={true} horizontal={true}>
-                                <View>
-                                    <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
-                                        <Row header={true} setVisibleTrue={this.setVisibleTrue} data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
-                                    </Table>
-                                    <ScrollView style={styles.dataWrapper} onMoveShouldSetResponder={false}>
-                                        <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
-
-                                            {
-                                                tableData.map((rowData, index) => (
-                                                    <Row
-                                                        navigation={this.props.navigation}
-                                                        rowKey={index}
-                                                        data={rowData}
-                                                        widthArr={state.widthArr}
-                                                        style={[styles.row, index % 2 && { backgroundColor: '#F7F9F9' }]}
-                                                        textStyle={styles.text}
-                                                    />
-                                                ))
-                                            }
-
-                                        </Table>
-                                    </ScrollView>
-
-                                </View>
-                            </ScrollView>
-                        </View>
-                        <View key="2">
-
-                            <Card
-                                styles={{ height: 200 }}
-                                title="Title"
-                                iconName="numeric-1"
-                                defaultTitle=""
-                                iconType="MaterialCommunityIcons"
-                                iconSize={50}
-                                defaultContent=""
-                                onPress={() => { }}
-                                content="Lorem ipsum dolor sit."
-                            />
-                        </View>
-                    </ViewPager>
-
-                    <Button
-
-                        color='#89734c'
-                        title='수치 설정하기'
-                        onPress={() => this.props.navigation.navigate('Modify')} />
-
-                </View>
-                <Modal animationType={"slide"} transparent={false} onDismiss={this.setVisibleFalse}
-                    visible={this.state.isVisible}
-                    onRequestClose={() => { console.log("Modal has been closed.") }}>
-                    <View style={styles.test}>
-
-                        <View style={styles.modal}>
-                            <Text style={styles.discription} onPress={
-                                this.setVisibleFalse
-                            }>PER 이란?</Text>
-                            <View>
-                                <Text></Text>
-                                <Text></Text>
-                                <Text>description1</Text>
-                                <Text>description2</Text>
-                                <Text>description3</Text>
-                                <Text>description4</Text>
-                                <Text>description5</Text>
-                                <Text>description6</Text>
-                                <Text>description7</Text>
-                                <Text>description8</Text>
-                            </View>
-
-
-
-
-                        </View>
-                    </View>
-                </Modal>
-            </View>
+          
         )
 
 
@@ -183,10 +91,26 @@ class HomeScreen extends React.Component {
 
 }
 
-const Hello = (name) => {
-    return (
-        <View><Text>{name}</Text></View>
-    );
+
+
+class CardScreen extends React.Component{
+
+    render(){
+        return(
+            <CardPage navigation={navigationForSend}/>
+        )
+    }
+}
+
+class TableScreen extends React.Component{
+
+    render(){
+       
+        return(
+            
+            <TablePage navigation={navigationForSend}/>
+        )
+    }
 }
 
 
@@ -194,7 +118,7 @@ class ModifyScreen extends React.Component {
 
 
     render() {
-
+        console.log('ModifyScreen : '+JSON.stringify(this.props));
         return (
             <Modify navigation={this.props.navigation} />
         );
@@ -228,7 +152,7 @@ const AppNavigator = createStackNavigator(
         Home: {
             screen: HomeScreen,
             navigationOptions: {
-                title: "Table",
+                title: "Main",
                 headerTitleAlign: 'center'
             },
         },
@@ -244,6 +168,22 @@ const AppNavigator = createStackNavigator(
             screen: DetailsScreen,
             navigationOptions: {
                 title: "Details",
+                headerTitleAlign: 'center',
+
+            },
+        },
+        CardScreen: {
+            screen: CardScreen,
+            navigationOptions: {
+                title: "Cards",
+                headerTitleAlign: 'center',
+
+            },
+        },
+        TableScreen: {
+            screen: TableScreen,
+            navigationOptions: {
+                title: "Tables",
                 headerTitleAlign: 'center',
 
             },
@@ -276,125 +216,115 @@ class App extends React.Component {
                 );
                 let json = await response.json();
                 const companyData = json;
-                await AsyncStorage.getItem('updated_date').then(function (data) {
-                    console.log('updated_date:' + data);
-
-                })
-                AsyncStorage.setItem('updated_date', '')
+              
+               
                 let update_companyData = async (companyData,setLoadingText,setLoaded) => {
                    
-                    console.log('update_companyData')
+               
                     setLoadingText("기업 정보 업데이트 중입니다.")
                   
-                    console.log(companyData.length);
+                  
                      await AsyncStorage.setItem('updated_date', new Date().toDateString())
     
                      await companyData.map(async (value, index) => {
-                     
-                        if(value.cmpName+''=='삼성전자'){
-                            AsyncStorage.setItem(value.cmpName,JSON.stringify(value));
-                            console.log(value.cmpName+''+" : "+JSON.stringify(value));
-                           }
-                      
-                      
-                    });
-                    console.log('Today:' + new Date().toDateString());
-
-               
-             
-                }
-
-                AsyncStorage.getItem('updated_date').then(async function (data) {
-                   
-                    if(data != todayDate)  await update_companyData(companyData,setLoadingText);
-                    else console.log('최신버젼입니다.');
-                    
-                  
-                }
-                    
-                     
-                        
-                )
-         
-
-
-
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        const getCompanyRankApiAsync = async (setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
-            try {
-                await getCompanyApiAsync();
-                let response = await fetch(
-                    'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
-                );
-                let json = await response.json();
-                const companyData = await JSON.parse(JSON.stringify(json));
-                await AsyncStorage.getItem('updated_date').then(function (data) {
-                    console.log('updated_date:' + data);
-                    
-                })
-                
-                let update_companyData = async (companyData,setLoadingText,setLoaded) => {
-                    
-               
-                    AsyncStorage.setItem('updated_date', '')
-                     await AsyncStorage.setItem('updated_date', new Date().toDateString())
-                  
-                    console.log('Today:' + new Date().toDateString());
-                    await companyData.map(async (value, index) => {
-                       if(value.cmpName+''=='삼성전자'){
-                        console.log(value.cmpName+''+" : "+JSON.stringify(value));
-                       AsyncStorage.getItem(value.cmpName).then(async function (data) {
-                            jsonValue = JSON.parse(value);
-                            jsonData= JSON.parse(data);
-                            console.log('assign:'+Object.assign(jsonValue,jsonData).toString());
-              
-                          
-                        });
-                       }
-                           
                        
+                            AsyncStorage.setItem(value.cmpName,JSON.stringify(value));
+                        
                       
                     });
-                 
+                  
+
+               
              
                 }
-                AsyncStorage.setItem('updated_date', '')
-                AsyncStorage.getItem('updated_date').then(async function (data) {
-                  
-                   update_companyData(companyData,setLoadingText);
-                                   
-               
-                 
-                }
+
             
-                     
-                        
-                )
+                update_companyData(companyData,setLoadingText);
 
                 setTimeout(() => {
                     setLoadingText("Do IT Quant");
                     AsyncStorage.getItem('삼성전자').then(function (data) {
                         console.log('삼성전자:' + data);
-                        
                     })
                 setTimeout(() => {
                     setLoadingText('');
                     setLoaded(true);
-                     }, 2500);
-                 }, 2000);
-                
-
+                     }, 1000);
+                 }, 1000);
+        
+                  
+                    
 
             } catch (error) {
                 console.error(error);
             }
         };
-        AsyncStorage.setItem('updated_date', '')
-        getCompanyRankApiAsync();
+
+        // const getCompanyRankApiAsync = async (setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
+        //     try {
+        //         await getCompanyApiAsync();
+        //         let response = await fetch(
+        //             'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
+        //         );
+        //         let json =  response.json();
+        //         const companyData = JSON.parse(JSON.stringify(json));
+           
+                
+        //         let update_companyData = async (companyData,setLoadingText,setLoaded) => {
+                    
+        //              await AsyncStorage.setItem('updated_date', new Date().toDateString());
+        //             await companyData.map(async (value, index) => { 
+        //                AsyncStorage.getItem(value.cmpName).then(async function (data) {
+
+        //                 let mergeData = JSON.stringify(Object.assign(value,JSON.parse(data)));
+        //                    if(index<20){
+        //                     console.log('mergeDate:'+mergeData);
+        //                     data==null?console.log('data is null'):AsyncStorage.setItem(value.cmpName,mergeData);
+        //                    }
+                          
+                           
+                    
+        //                 });
+                       
+                           
+                       
+                      
+        //             });
+                 
+             
+        //         }
+            
+              
+                  
+        //         update_companyData(companyData,setLoadingText).then(()=>{
+        //             setTimeout(() => {
+        //                 setLoadingText("Do IT Quant");
+        //                 AsyncStorage.getItem('삼성전자').then(function (data) {
+        //                     console.log('삼성전자:' + data);
+        //                 })
+        //             setTimeout(() => {
+        //                 setLoadingText('');
+        //                 setLoaded(true);
+        //                  }, 1000);
+        //              }, 1000);
+        //         });
+             
+
+              
+                
+
+
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
+      AsyncStorage.getItem('updated_date').then((date,setLoadingText = (text) => { this.setState({ loadingText: text }) },
+      setLoaded = (bool) => { this.setState({ isLoaded:bool }) })=>{
+        console.log('date:'+date);
+        console.log('todayDate:'+todayDate);
+       date==todayDate?setLoaded(true):getCompanyApiAsync();
+      })
+     
       
       
     }
