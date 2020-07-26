@@ -105,9 +105,9 @@ class CardScreen extends React.Component{
 class TableScreen extends React.Component{
 
     render(){
-       
+        console.log(navigationForSend)
         return(
-            
+           
             <TablePage navigation={navigationForSend}/>
         )
     }
