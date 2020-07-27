@@ -65,7 +65,7 @@ export class TablePage extends React.Component {
             container: { flex: 1, padding: 16, paddingTop: 13, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
             text: { textAlign: 'center', fontWeight: '100' },
-            discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
+            // discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
             dataWrapper: { marginTop: -1 },
             row: { height: 51.6, backgroundColor: '#ECF0F1' },
             semiheader: { flexDirection: 'row', flexWrap: 'wrap', padding: 15, borderBottomWidth: 3, borderBottomColor: 'gray', marginBottom: 5 },

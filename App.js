@@ -5,7 +5,7 @@ import { createStackNavigator, TransitionPresets } from 'react-navigation-stack'
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import AsyncStorage from '@react-native-community/async-storage';
+import { AsyncStorage } from 'react-native';
 import { Modify } from './Modify';
 import { Detail } from './Detail';
 import { CardPage } from './CardPage';
@@ -208,11 +208,12 @@ class App extends React.Component {
 
     componentDidMount() {
         let todayDate= new Date().toDateString()
+     
         const getCompanyApiAsync = async ( url,setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
             try {
 
                 let response = await fetch(
-                    'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata'
+                    'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
                 );
                 let json = await response.json();
                 const companyData = json;
@@ -227,7 +228,7 @@ class App extends React.Component {
                      await AsyncStorage.setItem('updated_date', new Date().toDateString())
     
                      await companyData.map(async (value, index) => {
-                       
+                        
                             AsyncStorage.setItem(value.cmpName,JSON.stringify(value));
                         
                       
