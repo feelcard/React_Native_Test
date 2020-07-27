@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Card} from '@paraboly/react-native-card'
-import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert, NativeModules } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert, NativeModules, RecyclerViewBackedScrollView } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
 export class CardPage extends React.Component {
     constructor(props) {
@@ -11,7 +11,9 @@ export class CardPage extends React.Component {
             widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
             isVisible: false,
             pageState: true,
-            TestData:{}
+            TestData:[],
+            insertTest:{}
+          
 
         }
     }
@@ -23,17 +25,32 @@ export class CardPage extends React.Component {
 
     render() {
        
-        AsyncStorage.multiGet(["삼성전자","KB금융"]).then(data =>{
+        AsyncStorage.getAllKeys().then((keys) =>{
+            AsyncStorage.multiGet(keys).then((data)=>{
+              
+                let mergeArr=[];
+                 data.map((value,index)=>{
+                    if(index<20){
+                        let parseString= value[1]
+                        console.log(value[1])
+                        let parseData= JSON.parse(parseString);
+                        let jsonArr =[{'key':value[0],'data':parseData}];
+                        mergeArr=mergeArr.concat(jsonArr);
+                       
+                    }
+             
+                })
+               
+                console.log(mergeArr);
+              
+            })
           
-          let insert= [data[1][0],JSON.parse(data[1][1])];
-            this.setState({TestData:insert})
-        })
+        }) 
         const state = this.state;
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
             text: { textAlign: 'center', fontWeight: '100' },
-            discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
             dataWrapper: { marginTop: -1 },
             row: { height: 51.6, backgroundColor: '#ECF0F1' },
             semiheader: { flexDirection: 'row', flexWrap: 'wrap', padding: 15, borderBottomWidth: 3, borderBottomColor: 'gray', marginBottom: 5 },
@@ -56,8 +73,7 @@ export class CardPage extends React.Component {
 
         });
     
-       console.log('TestData[1]:'+ JSON.stringify(state.TestData[1]));
-
+        console.log(state.TestData[0].key);
         
         return (
 
@@ -66,14 +82,14 @@ export class CardPage extends React.Component {
  
                       <Card
                       styles={{ height: 200 }}
-                      title={this.state.TestData[0]}
+                      title={'test'}
                       iconName="numeric-1"
                       defaultTitle=""
                       iconType="MaterialCommunityIcons"
                       iconSize={30}
                       defaultContent=""
                       onPress={() => this.props.navigation.navigate('Details')}
-                      content={JSON.stringify(state.TestData[1])}
+                      content={'TEST'}
                   />
 
                   {/* <Card

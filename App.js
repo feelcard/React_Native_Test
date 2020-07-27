@@ -3,13 +3,13 @@ import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert 
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import AnimatedSplash from "react-native-animated-splash-screen";// AnimatedSplash Component
-import { Table, TableWrapper, Row, Col } from 'react-native-table-component';// table Component
-import ViewPager from '@react-native-community/viewpager';
-import { Modal } from 'react-native-paper';
-import { Card } from "@paraboly/react-native-card";
-import Modify from './Modify';
-import Detail from './Detail';
-
+import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { AsyncStorage } from 'react-native';
+import { Modify } from './Modify';
+import { Detail } from './Detail';
+import { CardPage } from './CardPage';
+import { TablePage } from './TablePage';
 
 
 
@@ -258,6 +258,128 @@ class App extends React.Component {
             this.setState({ isLoaded: true });
         }, 2000);
 
+    componentDidMount() {
+        let todayDate= new Date().toDateString()
+     
+        const getCompanyApiAsync = async ( url,setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
+            try {
+
+                let response = await fetch(
+                    'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
+                );
+                let json = await response.json();
+                const companyData = json;
+              
+               
+                let update_companyData = async (companyData,setLoadingText,setLoaded) => {
+                   
+               
+                    setLoadingText("기업 정보 업데이트 중입니다.")
+                  
+                  
+                     await AsyncStorage.setItem('updated_date', new Date().toDateString())
+    
+                     await companyData.map(async (value, index) => {
+                        
+                            AsyncStorage.setItem(value.cmpName,JSON.stringify(value));
+                        
+                      
+                    });
+                  
+
+               
+             
+                }
+
+            
+                update_companyData(companyData,setLoadingText);
+
+                setTimeout(() => {
+                    setLoadingText("Do IT Quant");
+                    AsyncStorage.getItem('삼성전자').then(function (data) {
+                        console.log('삼성전자:' + data);
+                    })
+                setTimeout(() => {
+                    setLoadingText('');
+                    setLoaded(true);
+                     }, 1000);
+                 }, 1000);
+        
+                  
+                    
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        // const getCompanyRankApiAsync = async (setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
+        //     try {
+        //         await getCompanyApiAsync();
+        //         let response = await fetch(
+        //             'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
+        //         );
+        //         let json =  response.json();
+        //         const companyData = JSON.parse(JSON.stringify(json));
+           
+                
+        //         let update_companyData = async (companyData,setLoadingText,setLoaded) => {
+                    
+        //              await AsyncStorage.setItem('updated_date', new Date().toDateString());
+        //             await companyData.map(async (value, index) => { 
+        //                AsyncStorage.getItem(value.cmpName).then(async function (data) {
+
+        //                 let mergeData = JSON.stringify(Object.assign(value,JSON.parse(data)));
+        //                    if(index<20){
+        //                     console.log('mergeDate:'+mergeData);
+        //                     data==null?console.log('data is null'):AsyncStorage.setItem(value.cmpName,mergeData);
+        //                    }
+                          
+                           
+                    
+        //                 });
+                       
+                           
+                       
+                      
+        //             });
+                 
+             
+        //         }
+            
+              
+                  
+        //         update_companyData(companyData,setLoadingText).then(()=>{
+        //             setTimeout(() => {
+        //                 setLoadingText("Do IT Quant");
+        //                 AsyncStorage.getItem('삼성전자').then(function (data) {
+        //                     console.log('삼성전자:' + data);
+        //                 })
+        //             setTimeout(() => {
+        //                 setLoadingText('');
+        //                 setLoaded(true);
+        //                  }, 1000);
+        //              }, 1000);
+        //         });
+             
+
+              
+                
+
+
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // };
+      AsyncStorage.getItem('updated_date').then((date,setLoadingText = (text) => { this.setState({ loadingText: text }) },
+      setLoaded = (bool) => { this.setState({ isLoaded:bool }) })=>{
+        console.log('date:'+date);
+        console.log('todayDate:'+todayDate);
+       date==todayDate?setLoaded(true):getCompanyApiAsync();
+      })
+     
+      
+      
     }
 
     render() {
