@@ -1,6 +1,6 @@
 import React, { Component, Children } from 'react';
 import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
-import { Table, TableWrapper, Row, Col,Cell } from 'react-native-table-component';// table Component
+import { Table, TableWrapper, Row, Col,Cell,Cols } from 'react-native-table-component';// table Component
 import { Modal } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -38,7 +38,6 @@ export class TablePage extends React.Component {
     render() {
         const state = this.state;
       AsyncStorage.multiGet(['삼성전자','KB금융']).then((data) =>{
-        console.log(JSON.parse(data[0][1]).per);
         this.setState(
             {tableHead:JSON.parse(data[0][1]).per}
         ) 
@@ -97,18 +96,22 @@ export class TablePage extends React.Component {
         return (
 
             <View style={styles.container}>
-
-                <View style={StyleSheet.create({
-                    container: { flex: 1, paddingTop: 5, backgroundColor: '#fff' }
-                }).container}>
-
-                    <View>
+                    <View style={styles.container}>
                         <ScrollView Vertical={true}>
                         <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}> 
-                            
+                            <TableWrapper>
+                            <Cols
+                                  navigation={this.props.navigation}
+                                   data={tableData}
+                                  HeightArr={state.widthArr}
+                                  style={[styles.row, { backgroundColor: '#F7F9F9' }]}
+                                  textStyle={styles.text}
+                              />
+
+                            </TableWrapper>
                         </Table>
                         </ScrollView>
-                    </View>
+                 
                   
 
 

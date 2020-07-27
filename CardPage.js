@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Card} from '@paraboly/react-native-card'
-import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert, NativeModules } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export class CardPage extends React.Component {
     constructor(props) {
@@ -9,7 +10,8 @@ export class CardPage extends React.Component {
             tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA','ROE', 'Head7', 'Head8','Head9'],
             widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
             isVisible: false,
-            pageState: true
+            pageState: true,
+            TestData:{}
 
         }
     }
@@ -17,21 +19,16 @@ export class CardPage extends React.Component {
 
     setVisibleFalse = () => { this.setState({ isVisible: false }) };
 
-    viewPager = React.createRef();
+  
 
     render() {
+       
+        AsyncStorage.multiGet(["삼성전자","KB금융"]).then(data =>{
+          
+          let insert= [data[1][0],JSON.parse(data[1][1])];
+            this.setState({TestData:insert})
+        })
         const state = this.state;
-
-        const tableData = [];
-        for (let i = 0; i < 20; i += 1) {
-            const rowData = [];
-            for (let j = 0; j < 9; j += 1) {
-                rowData.push(`${i}${j}`);
-
-            }
-            tableData.push(rowData);
-        }
-
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
@@ -58,26 +55,39 @@ export class CardPage extends React.Component {
             test: { borderStyle: 'solid', borderWidth: 5, borderColor: 'white', padding: 0, marginHorizontal: 30, borderRadius: 2 }
 
         });
+    
+       console.log('TestData[1]:'+ JSON.stringify(state.TestData[1]));
 
-        pageChange = (page) => {
-            this.viewPager.current.setPage(page);
-            this.setState({ pageState: !this.state.pageState });
-        }
-
+        
         return (
 
             <View style={styles.container}>
-                <Card
-                    styles={{ height: 200 }}
-                    title="Title"
-                    iconName="numeric-1"
-                    defaultTitle=""
-                    iconType="MaterialCommunityIcons"
-                    iconSize={50}
-                    defaultContent=""
-                    onPress={() => { }}
-                    content="Lorem ipsum dolor sit."
-                />
+           
+ 
+                      <Card
+                      styles={{ height: 200 }}
+                      title={this.state.TestData[0]}
+                      iconName="numeric-1"
+                      defaultTitle=""
+                      iconType="MaterialCommunityIcons"
+                      iconSize={30}
+                      defaultContent=""
+                      onPress={() => this.props.navigation.navigate('Details')}
+                      content={JSON.stringify(state.TestData[1])}
+                  />
+
+                  {/* <Card
+                  styles={{ height: 200 }}
+                  title={this.state.TestData[0][1]}
+                  iconName="numeric-2"
+                  defaultTitle=""
+                  iconType="MaterialCommunityIcons"
+                  iconSize={30}
+                  defaultContent=""
+                  onPress={() => {() => this.props.navigation.navigate('Details')}}
+                  content="Lorem ipsum dolor sit."
+              /> */}
+              
             </View>
 
         )
