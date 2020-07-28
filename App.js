@@ -215,7 +215,38 @@ class App extends React.Component {
 
     componentDidMount() {
         let todayDate= new Date().toDateString()
-     
+        const keys = await AsyncStorage.getAllKeys();
+        let f = true;
+        for(var i in keys) {
+            if('updated_cd_date' == keys[i]) {
+                f = false;
+                break
+            }
+        }
+        const getCompanyDetailApiAsync = async ( url,setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ cdIsLoaded: loadbool })}) => {
+            try {
+                let response = await fetch(
+                    'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/companies'
+                );
+                let json = await response.json();
+                const companyDetailData = json;
+                let update_companyDetailData = async (companyDetailData, setLoadingText, setLoaded) => {
+                    setLoadingText("기업 세부 정보 업데이트 중입니다.");
+                     await AsyncStorage.setItem('updated_cd_date', new Date().toDateString())
+                     await companyDetailData.map(async (value, index) => {
+                        AsyncStorage.setItem(value.cmpName+'Info',JSON.stringify(value));
+                    });
+                }
+                await update_companyDetailData(companyDetailData, setLoadingText);
+            } catch(e){
+                console.log(e);
+            };
+        }
+        if(f==true) {
+            await getCompanyDetailApiAsync();
+        }
+
+
         const getCompanyApiAsync = async ( url,setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
             try {
 
