@@ -25,14 +25,14 @@ export class CardPage extends React.Component {
 
     render() {
        
-        AsyncStorage.getAllKeys().then((keys) =>{
+        AsyncStorage.getAllKeys().then((keys, err, setTestArray = (arr) => {this.setState({TestData: arr})}) =>{
             AsyncStorage.multiGet(keys).then((data)=>{
               
                 let mergeArr=[];
                  data.map((value,index)=>{
                     if(index<20){
                         let parseString= value[1]
-                        console.log(value[1])
+                        // console.log(value[1])
                         let parseData= JSON.parse(parseString);
                         let jsonArr =[{'key':value[0],'data':parseData}];
                         mergeArr=mergeArr.concat(jsonArr);
@@ -40,9 +40,9 @@ export class CardPage extends React.Component {
                     }
              
                 })
-               
-                console.log(mergeArr);
-              
+                
+                // console.log('mergeArr:', mergeArr[0]);
+                setTestArray(mergeArr);
             })
           
         }) 
@@ -73,7 +73,7 @@ export class CardPage extends React.Component {
 
         });
     
-        console.log(state.TestData[0].key);
+ 
         
         return (
 

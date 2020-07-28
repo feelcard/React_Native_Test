@@ -1,85 +1,69 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Alert,
-  Image,
-  Dimensions,
-  ImageBackground,
-} from "react-native";
-import { Button, ListItem, Overlay, Card } from "react-native-elements";
-import { createAppContainer } from "react-navigation";
-import { createStackNavigator } from "react-navigation-stack";
-import AnimatedSplash from "react-native-animated-splash-screen"; // AnimatedSplash Component
-import { Table, TableWrapper, Row, Col } from "react-native-table-component"; // table Component
-import { TextInput } from "react-native-paper";
-import {
-  AntDesign,
-  MaterialIcons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { StyleSheet, Text, View, ScrollView, Alert } from "react-native";
+import { Button, ListItem } from "react-native-elements";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import Info from "./Info";
+import { Card } from "react-native-shadow-cards";
 
 export default class Modify extends Component {
   constructor(props) {
     super(props);
     this.state = {
       inputData: {
-        per: 0,
-        pbr: 0,
-        roa: 0,
-        roe: 0,
-        debtRatio: 0,
-        reserveRatio: 0,
-        operMargin: 0,
+        wPer: 0,
+        wPbr: 0,
+        wRoa: 0,
+        wRoe: 0,
+        wDebtRatio: 0,
+        wReserveRatio: 0,
+        wOperMargin: 0,
       },
       isRight: this.isPercentRight,
       id: 0,
       isVisible: false,
+      editing: false,
       dataList: [
         {
           id: 0,
           title: "PER",
           subtitle: "Price Earnings Ratio",
-          stateKey: "per",
+          stateKey: "wPer",
         },
         {
           id: 1,
           title: "PBR",
           subtitle: "Price Book Ratio",
-          stateKey: "pbr",
+          stateKey: "wPbr",
         },
         {
           id: 2,
           title: "ROA",
           subtitle: "Return on Assets",
-          stateKey: "roa",
+          stateKey: "wRoa",
         },
         {
           id: 3,
           title: "ROE",
           subtitle: "Return on Earnings",
-          stateKey: "roe",
+          stateKey: "wRoe",
         },
         {
           id: 4,
           title: "부채비율",
           subtitle: "Debt Ratio",
-          stateKey: "debtRatio",
+          stateKey: "wDebtRatio",
         },
         {
           id: 5,
           title: "영업이익률",
           subtitle: "Operating Margin",
-          stateKey: "operMargin",
+          stateKey: "wOperMargin",
         },
         {
           id: 6,
           title: "유보율",
           subtitle: "Reserve Ratio",
-          stateKey: "reserveRatio",
+          stateKey: "wReserveRatio",
         },
       ],
     };
@@ -87,16 +71,43 @@ export default class Modify extends Component {
     this.onScroll = this.onScroll.bind(this);
   }
 
+  changeWeights = () => {
+    this.props.onChangeWeights(this.state.inputData);
+  };
+
+  UNSAFE_componentWillMount() {
+    this.setState({
+      inputData: { ...this.props.weights },
+    });
+  }
+
   setInputData = (text, key) => {
     let newInput = parseInt(text);
     if (newInput === NaN) newInput = 0;
 
-    this.setState((prevState) => ({
-      inputData: {
-        ...prevState.inputData,
-        [key]: newInput, // => 요기
-      },
-    }));
+    // 첫 수정시 나머지 값들은 0으로 초기화하고 editing은 true로 설정
+    if (!this.state.editing) {
+      this.setState({
+        inputData: {
+          wPer: 0,
+          wPbr: 0,
+          wRoa: 0,
+          wRoe: 0,
+          wDebtRatio: 0,
+          wReserveRatio: 0,
+          wOperMargin: 0,
+          [key]: newInput,
+        },
+        editing: true,
+      });
+    } else {
+      this.setState((prevState) => ({
+        inputData: {
+          ...prevState.inputData,
+          [key]: newInput, // => 요기
+        },
+      }));
+    }
   };
 
   isPercentRight = () => {
@@ -134,7 +145,8 @@ export default class Modify extends Component {
   }
 
   render() {
-    const { isRight, id, isVisible, dataList } = this.state;
+    const { isRight, id, isVisible, dataList, inputData, editing } = this.state;
+    const { weights } = this.props;
 
     return (
       <View style={styles.item}>
@@ -148,45 +160,53 @@ export default class Modify extends Component {
 
         {/* Modify content start */}
         <ScrollView showsVerticalScrollIndicator={false}>
-          {dataList.map((data) => {
-            return (
-              <ListItem
-                title={
-                  
-                  <Text
-                    style={styles.title}
-                    onPress={() => {
-                      this.setOverlayVisible(data.id, true); // => 요기
-                    }}
-                  >
-                    {data.title + ' '}
-                    <MaterialIcons 
-                   name="info-outline" size={15} color="black" />
-                  </Text>
-                }
-                leftIcon={
-                  <AntDesign
-                    name="pushpino"
-                    size={24}
-                    color="black"
-                    onPress={() => {
-                      this.setOverlayVisible(data.id, true); // => 요기
-                    }}
-                  />
-                }
-                subtitle={data.subtitle} // => 요기
-                subtitleStyle={styles.subtitleStyle}
-                rightElement={<Text>%</Text>}
-                input={{
-                  placeholder: "0",
-                  keyboardType: "number-pad",
-                  onChangeText: (text) =>
-                    this.setInputData(text, data.stateKey),
-                }}
-                bottomDivider
-              />
-            );
-          })}
+          <Card style={[styles.inputCard, styles.shadow]}>
+            {dataList.map((data) => {
+              return (
+                <ListItem
+                  key={data.id}
+                  title={
+                    <Text
+                      style={styles.title}
+                      onPress={() => {
+                        this.setOverlayVisible(data.id, true); // => 요기
+                      }}
+                    >
+                      {data.title + " "}
+                      <MaterialIcons
+                        name="info-outline"
+                        size={15}
+                        color="black"
+                      />
+                    </Text>
+                  }
+                  leftIcon={
+                    <AntDesign
+                      name="pushpino"
+                      size={24}
+                      color="black"
+                      onPress={() => {
+                        this.setOverlayVisible(data.id, true); // => 요기
+                      }}
+                    />
+                  }
+                  subtitle={data.subtitle} // => 요기
+                  subtitleStyle={styles.subtitleStyle}
+                  rightElement={<Text>%</Text>}
+                  input={{
+                    placeholder:
+                      JSON.stringify(weights) === JSON.stringify(inputData)
+                        ? inputData[data.stateKey].toString()
+                        : "0",
+                    keyboardType: "number-pad",
+                    onChangeText: (text) =>
+                      this.setInputData(text, data.stateKey),
+                  }}
+                  bottomDivider
+                />
+              );
+            })}
+          </Card>
 
           {!isRight() ? (
             <View>
@@ -217,7 +237,10 @@ export default class Modify extends Component {
               }}
               icon={<AntDesign name="checkcircleo" size={24} color="white" />}
               disabled={!isRight()}
-              onPress={() => this.props.navigation.navigate("Home")}
+              onPress={() => {
+                this.changeWeights();
+                this.props.navigation.navigate("Home");
+              }}
             />
           </View>
         </ScrollView>
@@ -252,8 +275,31 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     marginVertical: 20,
   },
-
   subtitleStyle: {
     width: 150,
   },
+  inputCard: {
+    flex: 1,
+    marginTop: 15,
+    paddingTop: 0,
+    borderRadius: 8,
+  },
+  shadow: {
+    ...Platform.select({
+      ios: {
+        shadowColor: "#4D4D4D",
+        shadowOffset: {
+          width: 0,
+          height: 3,
+        },
+        shadowOpacity: 0.4,
+        shadowRadius: 4,
+      },
+      android: {
+        shadowColor: "#4D4D4D",
+        elevation: 5,
+      },
+    }),
+  },
+
 });
