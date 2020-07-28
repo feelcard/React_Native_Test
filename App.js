@@ -15,6 +15,7 @@ import { TablePage } from './TablePage';
 let navigationForSend;
 let calArr=[];
 let cardRef;
+let tableRef;
 let w1= 1;//rankPer
 let w2= 0;//rankPbr
 let w3= 0;//rorankRoaa
@@ -130,7 +131,7 @@ class CardScreen extends React.Component{
    
  
     render(){
-        console.log('cardScreen:',this.state.dataSet)
+        console.log(JSON.stringify(this.state.dataSet))
         return(
             <CardPage navigation={navigationForSend} dataSet={this.state.dataSet}/>
         )
@@ -138,13 +139,26 @@ class CardScreen extends React.Component{
 }
 
 class TableScreen extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            dataSet:[]
+        }
+       tableRef = React.createRef();
+        JSON.stringify(this.state.dataSet)
+        tableRef.current={
+            setDataset:(arr)=>{this.setState({dataSet:arr})}
+        }
+     
+    }
+   
     
 
     render(){
         // console.log(navigationForSend)
         return(
            
-            <TablePage navigation={navigationForSend} />
+            <TablePage navigation={navigationForSend} dataSet={this.state.dataSet}/>
         )
     }
 }
@@ -155,7 +169,7 @@ class ModifyScreen extends React.Component {
     ModifyRef = React.createRef();
   
     render() {
-        // console.log('ModifyScreen : '+JSON.stringify(this.props));
+    
         return (
             <Modify navigation={this.props.navigation} />
         );
@@ -348,6 +362,7 @@ class App extends React.Component {
                             calArr.sort(calculateData);
                             calArr= calArr.slice(0,10);
                             cardRef.current.setDataset(calArr);
+                            tableRef.current.setDataset(calArr);
                         });
                        }
 

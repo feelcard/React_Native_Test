@@ -1,6 +1,6 @@
 import React, { Component, Children } from 'react';
 import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
-import { Table, TableWrapper, Row, Col,Cell,Cols } from 'react-native-table-component';// table Component
+import { Table, TableWrapper, Row, Col, Cell, Cols } from 'react-native-table-component';// table Component
 import AsyncStorage from '@react-native-community/async-storage';
 
 const Hello = (name) => {
@@ -15,12 +15,12 @@ export class TablePage extends React.Component {
         super(props);
 
         this.state = {
-            tableHead:{},
-            widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
+            tableHead: {},
+            widthArr: [30, 30, 30, 30, 30, 30, 30, 30, 30,30],
             isVisible: false,
             pageState: true,
-            tableDatas:[]
-            
+            dataSet: this.props.dataSet
+
 
         }
 
@@ -29,36 +29,49 @@ export class TablePage extends React.Component {
 
     setVisibleFalse = () => { this.setState({ isVisible: false }) };
 
-    setTableData = (per,pbr,roa,roe) =>{
-      //  AsyncStorage
+    setTableData = (per, pbr, roa, roe) => {
+        //  AsyncStorage
     }
 
 
     render() {
         const state = this.state;
-      AsyncStorage.multiGet(['삼성전자','KB금융']).then((data) =>{
-        this.setState(
-            {tableHead:JSON.parse(data[0][1]).per}
-        ) 
-      })
-       
-        // AsyncStorage.getAllKeys((err, keys) => {
-        //     AsyncStorage.multiGet(keys, (error, stores) => {
-        //       stores.map((result, i, store) => {
-        //         console.log(' [store[i][0]]: '+ store[i][1] );
-        //         return true;
-        //       });
-        //     });
-        //   });
-        const tableData = [];
-        for (let i = 0; i < 20; i += 1) {
-            const rowData = [];
-            for (let j = 0; j < 9; j += 1) {
-                rowData.push(`${i}${j}`);
 
-            }
-            tableData.push(rowData);
+        let tableData = {};
+        const asdf = () => {
+            let perdata = [];
+            let pbrdata = [];
+            let operatingdata = [];
+            let roadata = [];
+            let roedata = [];
+            let reverseRatiodata = [];
+            let debtRatiodata = [];
+
+            this.props.dataSet.map((val, i) => {
+                perdata.push(val.per);
+                pbrdata.push(val.pbr);
+                operatingdata.push(val.operatingProfitRatio);
+                roadata.push(val.roa);
+                roedata.push(val.roe);
+                reverseRatiodata.push(val.reserveRatio);
+                debtRatiodata.push(val.debtRatio);
+
+            })
+
+            tableData = [
+                perdata,
+                pbrdata,
+                operatingdata,
+                roadata,
+                roedata,
+                reverseRatiodata,
+                debtRatiodata
+            ]
+
+            console.log('tableData:', tableData);
         }
+
+        asdf();
 
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 13, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
@@ -87,43 +100,30 @@ export class TablePage extends React.Component {
 
         });
 
-        pageChange = (page) => {
-            this.viewPager.current.setPage(page);
-            this.setState({ pageState: !this.state.pageState });
-        }
+
 
         return (
 
             <View style={styles.container}>
-                    <View style={styles.container}>
-                        <ScrollView Vertical={true}>
-                        <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}> 
-                            <TableWrapper>
-                            <Cols
-                                  navigation={this.props.navigation}
-                                   data={tableData}
-                                  HeightArr={state.widthArr}
-                                  style={[styles.row, { backgroundColor: '#F7F9F9' }]}
-                                  textStyle={styles.text}
-                              />
 
-                            </TableWrapper>
-                        </Table>
-                        </ScrollView>
-                 
-                  
+            <ScrollView horizontal={true}>
+                <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
+                    <TableWrapper>
+                        <Cols
+                            navigation={this.props.navigation}
+                            data={tableData}
+                            heightArr={state.widthArr}
+                            widthArr={[50,50,50,50,50,80,80,80,80,80]}
+                            style={[styles.row, { backgroundColor: '#F7F9F9' }]}
+                            textStyle={styles.text}
+                        />
 
-
-
-                    <Button
-
-                        color='#89734c'
-                        title='수치 설정하기'
-                        onPress={() => this.props.navigation.navigate('Modify')} />
-
-                </View>
-
+                    </TableWrapper>
+                </Table>
+                </ScrollView>
             </View>
+
+
         )
 
 
@@ -133,59 +133,3 @@ export class TablePage extends React.Component {
 
 
 
-/* <Modal animationType={"slide"} transparent={false} onDismiss={this.setVisibleFalse}
-                    visible={this.state.isVisible}
-                    onRequestClose={() => { console.log("Modal has been closed.") }}>
-                    <View style={styles.test}>
-
-                        <View style={styles.modal}>
-                            <Text style={styles.discription} onPress={
-                                this.setVisibleFalse
-                            }>PER 이란?</Text>
-                            <View>
-                                <Text></Text>
-                                <Text></Text>
-                                <Text>description1</Text>
-                                <Text>description2</Text>
-                                <Text>description3</Text>
-                                <Text>description4</Text>
-                                <Text>description5</Text>
-                                <Text>description6</Text>
-                                <Text>description7</Text>
-                                <Text>description8</Text>
-                            </View>
-
-
-
-
-                        </View>
-                    </View>
-                </Modal> */
-
-/* <ScrollView Virtical={true} horizontal={true}>
-          <View>
-              <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
-                  <Row header={true} setVisibleTrue={this.setVisibleTrue} data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
-              </Table>
-              <ScrollView style={styles.dataWrapper} onMoveShouldSetResponder={false}>
-                  <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
-
-                      {
-                          tableData.map((rowData, index) => (
-                              <Row
-                                  navigation={this.props.navigation}
-                                  rowKey={index}
-                                  data={rowData}
-                                  widthArr={state.widthArr}
-                                  style={[styles.row, index % 2 && { backgroundColor: '#F7F9F9' }]}
-                                  textStyle={styles.text}
-                              />
-                          ))
-                      }
-
-                  </Table>
-              </ScrollView>
-
-          </View>
-      </ScrollView>
- */
