@@ -14,6 +14,7 @@ import { TablePage } from './TablePage';
 
 let navigationForSend;
 let calArr=[];
+let cardRef;
 let w1= 1;//rankPer
 let w2= 0;//rankPbr
 let w3= 0;//rorankRoaa
@@ -58,7 +59,7 @@ class HomeScreen extends React.Component {
     render() {
         const state = this.state;
         const Tab = createMaterialTopTabNavigator();
-   
+        console.log(calArr)
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
@@ -116,22 +117,47 @@ class HomeScreen extends React.Component {
 
 
 class CardScreen extends React.Component{
-
+    constructor(props){
+        super(props);
+        this.state={
+            dataSet:[]
+        }
+        cardRef = React.createRef();
+      
+        cardRef.current={
+            setDataset:(arr)=>{this.setState({dataSet:arr})}
+        }
+     
+    }
+   
+ 
     render(){
-        
+        console.log('cardScreen:',this.state.dataSet.length)
         return(
-            <CardPage navigation={navigationForSend}/>
+            <CardPage navigation={navigationForSend} dataSet={this.state.dataSet}/>
         )
     }
 }
 
 class TableScreen extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            dataSet:[]
+        }
+        tableRef = React.createRef();
+      
+        tableRef.current={
+            setDataset:(arr)=>{this.setState({dataSet:arr})}
+        }
+     
+    }
 
     render(){
         // console.log(navigationForSend)
         return(
            
-            <TablePage navigation={navigationForSend}/>
+            <TablePage navigation={navigationForSend} />
         )
     }
 }
@@ -208,12 +234,13 @@ const Container = createAppContainer(AppNavigator)
 class App extends React.Component {
     state = {
         isLoaded: false,
-        loadingText: '반갑습니다'
+        loadingText: '반갑습니다',
+        calArr:[]
     }
 
 
 
-    componentDidMount() {
+    async componentDidMount() {
         let todayDate= new Date().toDateString()
         const keys = await AsyncStorage.getAllKeys();
         let f = true;
@@ -298,34 +325,43 @@ class App extends React.Component {
                 console.error(error);
             }
         };
-      const setCalArr = () => AsyncStorage.getAllKeys().then((keys, setTestArray = (arr) => {return Promise.resolve(arr)}) =>{
-            AsyncStorage.multiGet(keys).then((data)=>{
-                let mergeArr=[];
-                 data.map((value,index)=>{
-                        let parseString= value[1]
-                        let parseData= JSON.parse(parseString);
-                        let jsonArr =[parseData];
-                        mergeArr=mergeArr.concat(jsonArr);
-                    return mergeArr  
-                }).then((mergeArr)=>{
-                    setTestArray(mergeArr).then((arr)=>{
-                        console.log(arr.length)
-                        calArr=arr;
-                        calArr.sort(calculateData)
-                        calArr.map((value,index)=>{
-                            if(index<20)
-                            console.log(`CalArr[${index}]=`,value);
-                        })
-                      
-                    });
+    
 
-                });
-              
-             
+    let mergeArr=[];
+   
+      const setCalArr = () => AsyncStorage.getAllKeys().then((keys,setDataset =() =>{this.setState({dataSet:arr})} , setTestArray = (arr) => {return Promise.resolve(arr)}) =>{
+            AsyncStorage.multiGet(keys).then((data)=>{
+
+                
+                    data.map((value,index)=>{
+                       let parseString;
+                        let parseData;
+                        let jsonArr;
+                       
+                        if(value[0]!='updated_cd_date'&&value[0]!='updated_date'&&(value[0].substring(value[0].length-4,value[0].length)!="Info")){
+                        parseString= value[1];
+                        parseString!=null&&(parseData= JSON.parse(parseString));
+                        jsonArr =[parseData];
+                         mergeArr=mergeArr.concat(jsonArr);
+                       if(mergeArr.length==2353){
+                        setTestArray(mergeArr).then((arr)=>{
+                            console.log(arr.length)
+                            calArr =calArr.concat(arr);
+                            calArr.sort(calculateData);
+                            calArr= calArr.slice(0,10);
+                            cardRef.current.setDataset(calArr);
+                        });
+                       }
+
+                        }
+                        
+                         })
+                      
                 
             })
         }) 
-
+       
+        
   
       AsyncStorage.getItem('updated_date').then((date,setLoadingText = (text) => { this.setState({ loadingText: text }) },
       setLoaded = (bool) => { this.setState({ isLoaded:bool }) })=>{

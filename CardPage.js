@@ -6,13 +6,13 @@ import { AsyncStorage } from 'react-native';
 export class CardPage extends React.Component {
     constructor(props) {
         super(props);
+     
         this.state = {
             tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA','ROE', 'Head7', 'Head8','Head9'],
             widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
             isVisible: false,
             pageState: true,
-            TestData:[],
-            insertTest:{}
+            dataSet : this.props.dataSet
           
 
         }
@@ -21,12 +21,14 @@ export class CardPage extends React.Component {
 
     setVisibleFalse = () => { this.setState({ isVisible: false }) };
 
+    
   
 
     render() {
        
-     
+       
         const state = this.state;
+        console.log('card dataSet'+this.props.dataSet[0].cmpName);
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
@@ -78,7 +80,6 @@ shadow: {
 
         });
     
-        // console.log(state.TestData[0].key);
         
         return (
 
@@ -91,7 +92,7 @@ shadow: {
                         title="companyDetailA"
                         style={[styles.cardCompanyDetailA, styles.shadow]}
                     >
-                        <Text>asdf</Text>
+                        <Text>{this.props.dataSet[0].cmpName}</Text>
                     </Card>
 
               
