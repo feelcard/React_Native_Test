@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Card} from '@paraboly/react-native-card'
+import {Card} from 'react-native-shadow-cards';
 import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert, NativeModules, RecyclerViewBackedScrollView } from 'react-native';
 import { AsyncStorage } from 'react-native';
 
@@ -25,27 +25,7 @@ export class CardPage extends React.Component {
 
     render() {
        
-        AsyncStorage.getAllKeys().then((keys) =>{
-            AsyncStorage.multiGet(keys).then((data)=>{
-              
-                let mergeArr=[];
-                 data.map((value,index)=>{
-                    if(index<20){
-                        let parseString= value[1]
-                        console.log(value[1])
-                        let parseData= JSON.parse(parseString);
-                        let jsonArr =[{'key':value[0],'data':parseData}];
-                        mergeArr=mergeArr.concat(jsonArr);
-                       
-                    }
-             
-                })
-               
-                console.log(mergeArr);
-              
-            })
-          
-        }) 
+     
         const state = this.state;
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
@@ -69,40 +49,51 @@ export class CardPage extends React.Component {
                 borderColor: '#ffb81c',
                 overflow: 'visible'
             },
-            test: { borderStyle: 'solid', borderWidth: 5, borderColor: 'white', padding: 0, marginHorizontal: 30, borderRadius: 2 }
+            test: { borderStyle: 'solid', borderWidth: 5, borderColor: 'white', padding: 0, marginHorizontal: 30, borderRadius: 2 },
+            cardCompanyDetailA: {
+                flex: 1,
+                marginTop: 15,
+                paddingTop: 0,
+                width: '90%',
+                borderRadius: 8,
+                flexDirection: 'row',
+            },
+shadow: {
+                ...Platform.select({
+                    ios: {
+                        shadowColor: '#4D4D4D',
+                        shadowOffset: {
+                            width: 0,
+                            height: 3,
+                        },
+                        shadowOpacity: 0.4,
+                        shadowRadius: 4,
+                    },
+                    android: {
+                        shadowColor: '#4D4D4D',
+                        elevation: 5,
+                    },
+                }),
+            },
 
         });
     
-        console.log(state.TestData[0].key);
+        // console.log(state.TestData[0].key);
         
         return (
 
             <View style={styles.container}>
            
  
-                      <Card
-                      styles={{ height: 200 }}
-                      title={'test'}
-                      iconName="numeric-1"
-                      defaultTitle=""
-                      iconType="MaterialCommunityIcons"
-                      iconSize={30}
-                      defaultContent=""
-                      onPress={() => this.props.navigation.navigate('Details')}
-                      content={'TEST'}
-                  />
+    
+          
+                  <Card
+                        title="companyDetailA"
+                        style={[styles.cardCompanyDetailA, styles.shadow]}
+                    >
+                        <Text>asdf</Text>
+                    </Card>
 
-                  {/* <Card
-                  styles={{ height: 200 }}
-                  title={this.state.TestData[0][1]}
-                  iconName="numeric-2"
-                  defaultTitle=""
-                  iconType="MaterialCommunityIcons"
-                  iconSize={30}
-                  defaultContent=""
-                  onPress={() => {() => this.props.navigation.navigate('Details')}}
-                  content="Lorem ipsum dolor sit."
-              /> */}
               
             </View>
 

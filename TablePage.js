@@ -1,7 +1,6 @@
 import React, { Component, Children } from 'react';
 import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
 import { Table, TableWrapper, Row, Col,Cell,Cols } from 'react-native-table-component';// table Component
-import { Modal } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const Hello = (name) => {
