@@ -28,7 +28,6 @@ export class CardPage extends React.Component {
        
        
         const state = this.state;
-        console.log('card dataSet'+this.props.dataSet[0].cmpName);
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
@@ -57,6 +56,7 @@ export class CardPage extends React.Component {
                 marginTop: 15,
                 paddingTop: 0,
                 width: '90%',
+                height:'5%',
                 borderRadius: 8,
                 flexDirection: 'row',
             },
@@ -84,17 +84,48 @@ shadow: {
         return (
 
             <View style={styles.container}>
+           <ScrollView Virtical={true}>
+              
+    
+           <Card
+            title="companyDetailA"
+                style={[styles.cardCompanyDetailA, styles.shadow]}
+            >
+                <Text>{JSON.stringify(state.dataSet[0])}</Text>
+            </Card>
+            <Card
+                title="companyDetailA"
+                style={[styles.cardCompanyDetailA, styles.shadow]}
+            >
+                <Text>{JSON.stringify(state.dataSet[1])}</Text>
+            </Card>
+            <Card
+                title="companyDetailA"
+                style={[styles.cardCompanyDetailA, styles.shadow]}
+            >
+                <Text>{JSON.stringify(this.props.dataSet[2])}</Text>
+            </Card>
+            <Card
+                title="companyDetailA"
+                style={[styles.cardCompanyDetailA, styles.shadow]}
+            >
+                <Text>{JSON.stringify(this.props.dataSet[3])}</Text>
+            </Card>
+            <Card
+                title="companyDetailA"
+                style={[styles.cardCompanyDetailA, styles.shadow]}
+            >
+                <Text>{JSON.stringify(this.props.dataSet[4])}</Text>
+            </Card>
+
            
+      
+
+           </ScrollView>
  
     
-          
-                  <Card
-                        title="companyDetailA"
-                        style={[styles.cardCompanyDetailA, styles.shadow]}
-                    >
-                        <Text>{this.props.dataSet[0].cmpName}</Text>
-                    </Card>
-
+       
+                 
               
             </View>
 

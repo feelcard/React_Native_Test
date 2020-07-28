@@ -24,8 +24,7 @@ let w6= 0;//rank_debt_ratio
 let w7= 0;//rank_reserve_ratio
 
 const calculateData = (a,b) => {
-    
-  
+
         let totalA=  (w1*a.rankPer) + (w2*a.rankPbr) + (w3*a.rankRoa) + (w4*a.rankRoe) + (w5*a.rankOper) + (w6*a.rankDebtRatio) + (w7*a.rankReserveRatio)
         let totalB=  (w1*b.rankPer) + (w2*b.rankPbr) + (w3*b.rankRoa) + (w4*b.rankRoe) + (w5*b.rankOper) + (w6*b.rankDebtRatio) + (w7*b.rankReserveRatio)
 
@@ -59,7 +58,6 @@ class HomeScreen extends React.Component {
     render() {
         const state = this.state;
         const Tab = createMaterialTopTabNavigator();
-        console.log(calArr)
         const styles = StyleSheet.create({
             container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
             header: { height: 50, backgroundColor: '#ffb81c' },
@@ -132,7 +130,7 @@ class CardScreen extends React.Component{
    
  
     render(){
-        console.log('cardScreen:',this.state.dataSet.length)
+        console.log('cardScreen:',this.state.dataSet)
         return(
             <CardPage navigation={navigationForSend} dataSet={this.state.dataSet}/>
         )
@@ -140,18 +138,7 @@ class CardScreen extends React.Component{
 }
 
 class TableScreen extends React.Component{
-    constructor(props){
-        super(props);
-        this.state={
-            dataSet:[]
-        }
-        tableRef = React.createRef();
-      
-        tableRef.current={
-            setDataset:(arr)=>{this.setState({dataSet:arr})}
-        }
-     
-    }
+    
 
     render(){
         // console.log(navigationForSend)
@@ -165,7 +152,8 @@ class TableScreen extends React.Component{
 
 class ModifyScreen extends React.Component {
 
-
+    ModifyRef = React.createRef();
+  
     render() {
         // console.log('ModifyScreen : '+JSON.stringify(this.props));
         return (
@@ -293,7 +281,7 @@ class App extends React.Component {
                      await AsyncStorage.setItem('updated_date', new Date().toDateString())
     
                      await companyData.map(async (value, index) => {
-                        
+                       
                             AsyncStorage.setItem(value.cmpName,JSON.stringify(value));
                         
                       
@@ -328,24 +316,34 @@ class App extends React.Component {
     
 
     let mergeArr=[];
+
+
    
       const setCalArr = () => AsyncStorage.getAllKeys().then((keys,setDataset =() =>{this.setState({dataSet:arr})} , setTestArray = (arr) => {return Promise.resolve(arr)}) =>{
             AsyncStorage.multiGet(keys).then((data)=>{
-
-                
+                let parseString;
+                let parseData;
+                let jsonArr;
+           
                     data.map((value,index)=>{
-                       let parseString;
-                        let parseData;
-                        let jsonArr;
+                      
+                        
+                        
+                        if(value[0]!="updated_date"&&value[0]!="updated_cd_date"&&value[0]!="updated_data"&&(value[0].substring(value[0].length-4,value[0].length)!="Info")){
+                           
+                            parseString= value[1];
+                            parseData=JSON.parse(parseString);
+                            jsonArr =[parseData];
+                            mergeArr=mergeArr.concat(jsonArr);
+                 
                        
-                        if(value[0]!='updated_cd_date'&&value[0]!='updated_date'&&(value[0].substring(value[0].length-4,value[0].length)!="Info")){
-                        parseString= value[1];
-                        parseString!=null&&(parseData= JSON.parse(parseString));
-                        jsonArr =[parseData];
-                         mergeArr=mergeArr.concat(jsonArr);
+             
+                       
+                  
                        if(mergeArr.length==2353){
                         setTestArray(mergeArr).then((arr)=>{
-                            console.log(arr.length)
+
+                            console.log(mergeArr.length)
                             calArr =calArr.concat(arr);
                             calArr.sort(calculateData);
                             calArr= calArr.slice(0,10);
@@ -367,7 +365,7 @@ class App extends React.Component {
       setLoaded = (bool) => { this.setState({ isLoaded:bool }) })=>{
         console.log('date:'+date);
         console.log('todayDate:'+todayDate);
-        AsyncStorage.getItem('')
+       
        if(date==todayDate){
         setCalArr().then(()=>{
             setLoadingText('');
