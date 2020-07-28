@@ -22,6 +22,12 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
 import * as Font from 'expo-font';
 
+Font.loadAsync({
+    Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
+    'NanumGothic-Regular': require('./assets/fonts/NanumGothic-Regular.ttf'),
+    'NanumGothic-Bold': require('./assets/fonts/NanumGothic-Bold.ttf'),
+});
+
 const Hello = (name) => {
   return (
     <View>
@@ -182,7 +188,12 @@ export class TablePage extends React.Component {
       },
       badgeList: {
           flexDirection: 'row',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          marginBottom: 10,
+          backgroundColor: 'gray'
+      },
+      badgeComp: {
+          marginHorizontal: 5,
       }
     });
 
@@ -196,18 +207,34 @@ export class TablePage extends React.Component {
           
         <View style={styles.container}>
           <View style={styles.badgeList}>
-            <View>
-                <Text>PER</Text>
-                <Badge value='20' status="error" />
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>PER</Text>
+                <Badge value='20' status="success" />
             </View>
-            <View>
-                <Text>PBR</Text>
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>PBR</Text>
                 <Badge value='30' status="error" />
             </View>
-            <View>
-                <Text>ROE</Text>
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
                 <Badge value='50' status="error" />
-            </View>            
+            </View> 
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
+                <Badge value='50' status="warning" />
+            </View>
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
+                <Badge value='50' status="error" />
+            </View>
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
+                <Badge value='50' status="primary" />
+            </View>
+            <View style={styles.badgeComp}>
+                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
+                <Badge value='50' status="error" />
+            </View>           
           </View>
           <ScrollView Vertical={true}>
             <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
