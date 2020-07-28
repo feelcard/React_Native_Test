@@ -91,13 +91,13 @@ shadow: {
             title="companyDetailA"
                 style={[styles.cardCompanyDetailA, styles.shadow]}
             >
-                <Text>{JSON.stringify(state.dataSet[0])}</Text>
+                <Text>{JSON.stringify(this.props.dataSet[0])}</Text>
             </Card>
             <Card
                 title="companyDetailA"
                 style={[styles.cardCompanyDetailA, styles.shadow]}
             >
-                <Text>{JSON.stringify(state.dataSet[1])}</Text>
+                <Text>{JSON.stringify(this.props.dataSet[1])}</Text>
             </Card>
             <Card
                 title="companyDetailA"
