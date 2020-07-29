@@ -1,30 +1,21 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ToastAndroid,
-  Button,
-  ScrollView,
-  Alert,
-  NativeModules,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { createAppContainer } from "react-navigation";
-import {
-  createStackNavigator,
-  TransitionPresets,
-} from "react-navigation-stack";
+import { createStackNavigator } from "react-navigation-stack";
 import AnimatedSplash from "react-native-animated-splash-screen"; // AnimatedSplash Component
 import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { AsyncStorage } from "react-native";
-import Modify from "./Modify";
+import { Modify } from "./Modify";
 import { Detail } from "./Detail";
 import { CardPage } from "./CardPage";
 import { TablePage } from "./TablePage";
 
 let navigationForSend;
+let calArr = [];
+let calArr10 = [];
+let cardRef;
+let tableRef;
 
 let globalWeights = {
   wPer: 0,
@@ -34,6 +25,38 @@ let globalWeights = {
   wDebtRatio: 0,
   wOperMargin: 0,
   wReserveRatio: 0,
+};
+
+const calculateData = (a, b) => {
+  let gw = globalWeights;
+  let totalA =
+    gw.wPer * a.rankPer +
+    gw.wPbr * a.rankPbr +
+    gw.wRoa * a.rankRoa +
+    gw.wRoe * a.rankRoe +
+    gw.wOperMargin * a.rankOper +
+    gw.wDebtRatio * a.rankDebtRatio +
+    gw.wReserveRatio * a.rankReserveRatio;
+  let totalB =
+    gw.wPer * b.rankPer +
+    gw.wPbr * b.rankPbr +
+    gw.wRoa * b.rankRoa +
+    gw.wRoe * b.rankRoe +
+    gw.wOperMargin * b.rankOper +
+    gw.wDebtRatio * b.rankDebtRatio +
+    gw.wReserveRatio * b.rankReserveRatio;
+
+  if (totalA == totalB) {
+    return 0;
+  }
+  return totalA > totalB ? 1 : -1;
+};
+
+let setSortingTableData = () => {
+  console.log("원본데이터", calArr.length);
+  calArr.sort(calculateData);
+  calArr10 = calArr.slice(0, 10);
+  console.log("뽑아온 데이터", calArr10.length);
 };
 
 class HomeScreen extends React.Component {
@@ -54,7 +77,6 @@ class HomeScreen extends React.Component {
       },
     };
   }
-
   setVisibleTrue = () => {
     this.setState({ isVisible: true });
   };
@@ -67,18 +89,26 @@ class HomeScreen extends React.Component {
     const { navigation } = this.props;
     const updatedWeights = navigation.getParam("weights", null);
 
-    updatedWeights !== null &&
-      JSON.stringify(this.state.weights) !== JSON.stringify(updatedWeights) &&
+    // updatedWeights가 null아니고, 전에 state값과 비교해서 같다면 setState를 실행하지 않도록 합니다.
+    if (
+      updatedWeights !== null &&
+      JSON.stringify(this.state.weights) !== JSON.stringify(updatedWeights)
+    ) {
       this.setState({
         weights: { ...updatedWeights },
       });
+    }
 
+    // updated가 null이 아닐 때만 globalWeights 전역변수에 변경된 Weights Object를 저장
     updatedWeights !== null && (globalWeights = updatedWeights);
+
+    // 새로운 Weights Object를 가지고 sorting을 실행합니다.
+    setSortingTableData();
   };
 
   render() {
+    const state = this.state;
     const Tab = createMaterialTopTabNavigator();
-
     const styles = StyleSheet.create({
       container: {
         flex: 1,
@@ -125,9 +155,6 @@ class HomeScreen extends React.Component {
         borderBottomWidth: 3,
       },
       modal: {
-        // flex: 1,
-        // alignItems: 'center',
-
         backgroundColor: "#ffffff",
         borderWidth: 5,
         borderColor: "#ffffff", //#8D9093
@@ -173,8 +200,50 @@ class HomeScreen extends React.Component {
 }
 
 class CardScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataSet: [],
+      cardWeights: {
+        wPer: 0,
+        wPbr: 0,
+        wRoa: 0,
+        wRoe: 0,
+        wDebtRatio: 0,
+        wOperMargin: 0,
+        wReserveRatio: 0,
+      },
+    };
+    cardRef = React.createRef();
+
+    cardRef.current = {
+      setDataset: (arr) => {
+        this.setState({ dataSet: arr });
+      },
+    };
+  }
+
+  componentWillMount() {
+    const { propsWeights } = this.props;
+
+    propsWeights !== null &&
+      this.setState({
+        cardWeights: { ...propsWeights },
+      });
+
+    tableRef !== undefined && tableRef.current.setDataset(calArr10);
+    cardRef !== undefined && cardRef.current.setDataset(calArr10);
+  }
+
   render() {
-    return <CardPage navigation={navigationForSend} />;
+    const { cardWeights, dataSet } = this.state;
+    return (
+      <CardPage
+        navigation={navigationForSend}
+        dataSet={dataSet}
+        weights={cardWeights}
+      />
+    );
   }
 }
 
@@ -182,43 +251,89 @@ class TableScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tableWeights: { ...globalWeights },
+      dataSet: [],
+      tableWeights: {
+        wPer: 0,
+        wPbr: 0,
+        wRoa: 0,
+        wRoe: 0,
+        wDebtRatio: 0,
+        wOperMargin: 0,
+        wReserveRatio: 0,
+      },
+    };
+    tableRef = React.createRef();
+    JSON.stringify(this.state.dataSet);
+    tableRef.current = {
+      setDataset: (arr) => {
+        this.setState({ dataSet: arr });
+        // console.log(arr);
+      },
     };
   }
 
   componentWillMount() {
     const { propsWeights } = this.props;
-    // console.log("propsWeights: ", propsWeights);
 
     propsWeights !== null &&
       this.setState({
         tableWeights: { ...propsWeights },
       });
+
+    tableRef !== undefined && tableRef.current.setDataset(calArr10);
+    cardRef !== undefined && cardRef.current.setDataset(calArr10);
   }
 
   render() {
-    const { tableWeights } = this.state;
-    // console.log("tableWeights: ", tableWeights);
-    return <TablePage navigation={navigationForSend} weights={tableWeights} />;
-  }
-}
+    const { tableWeights, dataSet } = this.state;
 
-class ModifyScreen extends React.Component {
-
-  render() {
-    // console.log('globalWeights: ', JSON.stringify(globalWeights));
+    console.log("table: ", dataSet[0]);
     return (
-      <Modify
-        navigation={this.props.navigation} 
-        weights={globalWeights}
+      <TablePage
+        navigation={navigationForSend}
+        dataSet={dataSet}
+        weights={tableWeights}
       />
     );
   }
 }
 
-class DetailsScreen extends React.Component {
+class ModifyScreen extends React.Component {
   render() {
-    return <Detail />;
+    return (
+      <Modify navigation={this.props.navigation} weights={globalWeights} />
+    );
+  }
+}
+
+class DetailsScreen extends React.Component {
+  state = {
+    tmpclip: "",
+    detailA: [],
+    detailB: [],
+  };
+
+  UNSAFE_componentWillMount() {
+    const { navigation } = this.props;
+    const updatedT = navigation.getParam("tmpclip", null);
+    const updatedA = navigation.getParam("detailA", null);
+    const updatedB = navigation.getParam("detailB", null);
+
+    this.setState({
+      tmpclip: updatedT,
+      detailA: updatedA,
+      detailB: updatedB,
+    });
+  }
+
+  render() {
+    return (
+      <Detail
+        tmpclip={this.state.tmpclip}
+        detailA={this.state.detailA}
+        detailB={this.state.detailB}
+      />
+    );
   }
 }
 
@@ -245,22 +360,6 @@ const AppNavigator = createStackNavigator(
         headerTitleAlign: "center",
       },
     },
-    // CardScreen: {
-    //     screen: CardScreen,
-    //     navigationOptions: {
-    //         title: "Cards",
-    //         headerTitleAlign: 'center',
-
-    //     },
-    // },
-    // TableScreen: {
-    //     screen: TableScreen,
-    //     navigationOptions: {
-    //         title: "Tables",
-    //         headerTitleAlign: 'center',
-
-    //     },
-    // }
   },
   {
     initialRouteName: "Home",
@@ -273,10 +372,56 @@ class App extends React.Component {
   state = {
     isLoaded: false,
     loadingText: "반갑습니다",
+    calArr: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     let todayDate = new Date().toDateString();
+    const keys = await AsyncStorage.getAllKeys();
+    let f = true;
+    for (var i in keys) {
+      if ("updated_cd_date" == keys[i]) {
+        f = false;
+        break;
+      }
+    }
+    const getCompanyDetailApiAsync = async (
+      url,
+      setLoadingText = (text) => {
+        this.setState({ loadingText: text });
+      },
+      setLoaded = (loadbool) => {
+        this.setState({ cdIsLoaded: loadbool });
+      }
+    ) => {
+      try {
+        let response = await fetch(
+          "http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/companies"
+        );
+        let json = await response.json();
+        const companyDetailData = json;
+        let update_companyDetailData = async (
+          companyDetailData,
+          setLoadingText,
+          setLoaded
+        ) => {
+          setLoadingText("기업 세부 정보 업데이트 중입니다.");
+          await AsyncStorage.setItem(
+            "updated_cd_date",
+            new Date().toDateString()
+          );
+          await companyDetailData.map(async (value, index) => {
+            AsyncStorage.setItem(value.cmpName + "Info", JSON.stringify(value));
+          });
+        };
+        await update_companyDetailData(companyDetailData, setLoadingText);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    if (f == true) {
+      await getCompanyDetailApiAsync();
+    }
 
     const getCompanyApiAsync = async (
       url,
@@ -325,50 +470,53 @@ class App extends React.Component {
       }
     };
 
-    // const getCompanyRankApiAsync = async (setLoadingText = (text) => { this.setState({ loadingText: text }) },setLoaded=(loadbool)=>{this.setState({ isLoaded: loadbool })}) => {
-    //     try {
-    //         await getCompanyApiAsync();
-    //         let response = await fetch(
-    //             'http://ec2-15-164-117-230.ap-northeast-2.compute.amazonaws.com:8080/quantdata/rank'
-    //         );
-    //         let json =  response.json();
-    //         const companyData = JSON.parse(JSON.stringify(json));
+    let mergeArr = [];
 
-    //         let update_companyData = async (companyData,setLoadingText,setLoaded) => {
+    const setCalArr = () =>
+      AsyncStorage.getAllKeys().then(
+        (
+          keys,
+          setDataset = () => {
+            this.setState({ dataSet: arr });
+          },
+          setTestArray = (arr) => {
+            return Promise.resolve(arr);
+          }
+        ) => {
+          AsyncStorage.multiGet(keys).then((data) => {
+            let parseString;
+            let parseData;
+            let jsonArr;
 
-    //              await AsyncStorage.setItem('updated_date', new Date().toDateString());
-    //             await companyData.map(async (value, index) => {
-    //                AsyncStorage.getItem(value.cmpName).then(async function (data) {
+            data.map((value, index) => {
+              if (
+                value[0] != "updated_date" &&
+                value[0] != "updated_cd_date" &&
+                value[0] != "updated_data" &&
+                value[0].substring(value[0].length - 4, value[0].length) !=
+                  "Info"
+              ) {
+                parseString = value[1];
+                parseData = JSON.parse(parseString);
+                jsonArr = [parseData];
+                mergeArr = mergeArr.concat(jsonArr);
 
-    //                 let mergeData = JSON.stringify(Object.assign(value,JSON.parse(data)));
-    //                    if(index<20){
-    //                     console.log('mergeDate:'+mergeData);
-    //                     data==null?console.log('data is null'):AsyncStorage.setItem(value.cmpName,mergeData);
-    //                    }
+                if (mergeArr.length == 2353) {
+                  setTestArray(mergeArr).then((arr) => {
+                    console.log(mergeArr.length);
+                    calArr = calArr.concat(arr);
+                    calArr.sort(calculateData);
+                    calArr10 = calArr.slice(0, 10);
+                    cardRef.current.setDataset(calArr10);
+                    tableRef.current.setDataset(calArr10);
+                  });
+                }
+              }
+            });
+          });
+        }
+      );
 
-    //                 });
-
-    //             });
-
-    //         }
-
-    //         update_companyData(companyData,setLoadingText).then(()=>{
-    //             setTimeout(() => {
-    //                 setLoadingText("Do IT Quant");
-    //                 AsyncStorage.getItem('삼성전자').then(function (data) {
-    //                     console.log('삼성전자:' + data);
-    //                 })
-    //             setTimeout(() => {
-    //                 setLoadingText('');
-    //                 setLoaded(true);
-    //                  }, 1000);
-    //              }, 1000);
-    //         });
-
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
     AsyncStorage.getItem("updated_date").then(
       (
         date,
@@ -379,9 +527,22 @@ class App extends React.Component {
           this.setState({ isLoaded: bool });
         }
       ) => {
-        // console.log('date:'+date);
-        // console.log('todayDate:'+todayDate);
-        date == todayDate ? setLoaded(true) : getCompanyApiAsync();
+        console.log("date:" + date);
+        console.log("todayDate:" + todayDate);
+
+        if (date == todayDate) {
+          setCalArr().then(() => {
+            setLoadingText("");
+            setLoaded(true);
+          });
+        } else {
+          getCompanyApiAsync().then(() => {
+            setCalArr().then(() => {
+              setLoadingText("");
+              setLoaded(true);
+            });
+          });
+        }
       }
     );
   }

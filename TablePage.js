@@ -17,16 +17,28 @@ import {
   Cell,
   Cols,
 } from "react-native-table-component"; // table Component
-import { Modal } from "react-native-paper";
 import AsyncStorage from "@react-native-community/async-storage";
-import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
+import { AppLoading } from "expo";
 import { Card } from "react-native-shadow-cards";
+import { Badge } from "react-native-elements";
 import * as Font from "expo-font";
+import { BadgeWeights } from "./BadgeWeights";
 
-const Hello = (name) => {
+const CellDesign = (text) => {
+  const styles = StyleSheet.create({
+    textStyle: {
+      backgroundColor: "#fffeb3",
+      alignItems: "center",
+      padding: 10,
+    },
+  });
+
+  // if (!fontsLoaded) {
+  //     return <AppLoading />;
+  //   }else
   return (
-    <View>
-      <Text>{name}</Text>
+    <View style={styles.textStyle}>
+      <Text>{text}</Text>
     </View>
   );
 };
@@ -37,10 +49,19 @@ export class TablePage extends React.Component {
 
     this.state = {
       tableHead: {},
-      widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
+      widthArr: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40],
       isVisible: false,
       pageState: true,
-      tableDatas: [],
+      dataSet: this.props.dataSet,
+      weights: {
+        wPer: 0,
+        wPbr: 0,
+        wRoa: 0,
+        wRoe: 0,
+        wDebtRatio: 0,
+        wOperMargin: 0,
+        wReserveRatio: 0,
+      },
       weightsList: [
         {
           name: "PER",
@@ -71,15 +92,6 @@ export class TablePage extends React.Component {
           stateKey: "wReserveRatio",
         },
       ],
-      weights: {
-        wPer: 0,
-        wPbr: 0,
-        wRoa: 0,
-        wRoe: 0,
-        wDebtRatio: 0,
-        wOperMargin: 0,
-        wReserveRatio: 0,
-      },
     };
   }
 
@@ -87,21 +99,7 @@ export class TablePage extends React.Component {
     this.setState({
       weights: { ...this.props.weights },
     });
-
-    
   }
-
-  whatColor = (weight) => {
-    if (weight >= 50) {
-      return "error";
-    } else if (weight >= 30) {
-      return "warning";
-    } else if (weight >= 10) {
-      return "primary";
-    } else {
-      return "success";
-    }
-  };
 
   setVisibleTrue = () => {
     this.setState({ isVisible: true });
@@ -115,49 +113,81 @@ export class TablePage extends React.Component {
     //  AsyncStorage
   };
 
-  
-  render() {
-
-    Font.loadAsync({
-      Lobster: require("./assets/fonts/Lobster-Regular.ttf"),
-      "NanumGothic-Regular": require("./assets/fonts/NanumGothic-Regular.ttf"),
-      "NanumGothic-Bold": require("./assets/fonts/NanumGothic-Bold.ttf"),
-    });
-
-    const state = this.state;
-    AsyncStorage.multiGet(["삼성전자", "KB금융"]).then((data) => {
-      this.setState({ tableHead: JSON.parse(data[0][1]).per });
-    });
-
-    // AsyncStorage.getAllKeys((err, keys) => {
-    //     AsyncStorage.multiGet(keys, (error, stores) => {
-    //       stores.map((result, i, store) => {
-    //         console.log(' [store[i][0]]: '+ store[i][1] );
-    //         return true;
-    //       });
-    //     });
-    //   });
-    const tableData = [];
-    for (let i = 0; i < 20; i += 1) {
-      const rowData = [];
-      for (let j = 0; j < 9; j += 1) {
-        rowData.push(`${i}${j}`);
-      }
-      tableData.push(rowData);
+  whatColor = (weight) => {
+    if (weight >= 50) {
+      return "error";
+    } else if (weight >= 30) {
+      return "warning";
+    } else if (weight >= 10) {
+      return "primary";
+    } else {
+      return "success";
     }
+  };
+
+  render() {
+    const state = this.state;
+    let tableData = {};
+    let tableScrollData = {};
+    const hey = () => {
+      let nameData = ["기업이름"];
+      let codeData = ["종목코드"];
+      let perdata = ["PER"];
+      let pbrdata = ["PBR"];
+      let operatingdata = ["ROA"];
+      let roadata = ["ROE"];
+      let roedata = ["부채비율"];
+      let reverseRatiodata = ["영업이익률"];
+      let debtRatiodata = ["유보율"];
+
+      this.props.dataSet.map((val, i) => {
+        nameData.push(i % 2 == 0 ? CellDesign(val.cmpName) : val.cmpName);
+        codeData.push(val.code);
+        perdata.push(val.per);
+        pbrdata.push(val.pbr);
+        operatingdata.push(val.operatingProfitRatio);
+        roadata.push(val.roa);
+        roedata.push(val.roe);
+        reverseRatiodata.push(val.reserveRatio);
+        debtRatiodata.push(val.debtRatio);
+      });
+      tableData = [nameData, codeData];
+
+      tableScrollData = [
+        perdata,
+        pbrdata,
+        operatingdata,
+        roadata,
+        roedata,
+        reverseRatiodata,
+        debtRatiodata,
+      ];
+    };
+
+    hey();
 
     const styles = StyleSheet.create({
       container: {
         flex: 1,
+        padding: 16,
+        paddingTop: 13,
         backgroundColor: "#fff",
         marginHorizontal: 10,
         alignContent: "center",
+        paddingBottom: 70,
       },
+      tableContainer: {
+        flex: 1,
+        backgroundColor: "#fff",
+        alignContent: "center",
+        flexDirection: "row",
+      },
+      scrollTable: { paddingRight: 130 },
       header: { height: 50, backgroundColor: "#ffb81c" },
       text: { textAlign: "center", fontWeight: "100" },
       // discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
       dataWrapper: { marginTop: -1 },
-      row: { height: 51.6, backgroundColor: "#ECF0F1" },
+      row: { height: 51.6 },
       semiheader: {
         flexDirection: "row",
         flexWrap: "wrap",
@@ -183,6 +213,7 @@ export class TablePage extends React.Component {
       modal: {
         // flex: 1,
         // alignItems: 'center',
+
         backgroundColor: "#ffffff",
         borderWidth: 5,
         borderColor: "#ffffff", //#8D9093
@@ -210,10 +241,10 @@ export class TablePage extends React.Component {
       badgeComp: {
         alignItems: "center",
         marginHorizontal: 2,
-        backgroundColor: '#89734c',
+        backgroundColor: "#89734c",
         padding: 5,
         width: 40,
-        borderRadius: 20
+        borderRadius: 20,
       },
       shadow: {
         ...Platform.select({
@@ -233,24 +264,14 @@ export class TablePage extends React.Component {
         }),
       },
       badgeTitle: {
-        fontFamily: "NanumGothic-Bold",
+        // fontFamily: "NanumGothic-Bold",
         marginBottom: 2,
         color: "#ffbc00",
         fontSize: 8,
       },
-      scrollView: {
-        marginHorizontal: 10,
-      },
     });
 
-    pageChange = (page) => {
-      this.viewPager.current.setPage(page);
-      this.setState({ pageState: !this.state.pageState });
-    };
-
     const { weightsList, weights } = this.state;
-
-    // console.log('tablePage: ', weights);
 
     return (
       <View style={styles.container}>
@@ -267,83 +288,48 @@ export class TablePage extends React.Component {
             );
           })}
         </View>
-        <ScrollView Vertical={true} style={styles.scrollView}>
-          <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+        <View style={styles.tableContainer}>
+          <Table
+            borderStyle={{ borderBottomWidth: 3, borderBottomColor: "#C1C0B9" }}
+          >
             <TableWrapper>
               <Cols
                 navigation={this.props.navigation}
                 data={tableData}
-                HeightArr={state.widthArr}
-                style={[styles.row, { backgroundColor: "#F7F9F9" }]}
+                heightArr={state.widthArr}
+                widthArr={[68, 59]}
+                style={[styles.row]}
                 textStyle={styles.text}
               />
             </TableWrapper>
           </Table>
-        </ScrollView>
-
+          <View style={styles.scrollTable}>
+            <ScrollView horizontal={true}>
+              <Table
+                borderStyle={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#C1C0B9",
+                }}
+              >
+                <TableWrapper>
+                  <Cols
+                    navigation={this.props.navigation}
+                    data={tableScrollData}
+                    heightArr={state.widthArr}
+                    widthArr={[50, 43, 43, 48, 55, 65, 55]}
+                    style={[styles.row]}
+                    textStyle={styles.text}
+                  />
+                </TableWrapper>
+              </Table>
+            </ScrollView>
+          </View>
+        </View>
         <Button
-          color="#89734c"
-          title="수치 설정하기"
+          title="Submit"
           onPress={() => this.props.navigation.navigate("Modify")}
         />
       </View>
     );
   }
 }
-
-/* <Modal animationType={"slide"} transparent={false} onDismiss={this.setVisibleFalse}
-                    visible={this.state.isVisible}
-                    onRequestClose={() => { console.log("Modal has been closed.") }}>
-                    <View style={styles.test}>
-
-                        <View style={styles.modal}>
-                            <Text style={styles.discription} onPress={
-                                this.setVisibleFalse
-                            }>PER 이란?</Text>
-                            <View>
-                                <Text></Text>
-                                <Text></Text>
-                                <Text>description1</Text>
-                                <Text>description2</Text>
-                                <Text>description3</Text>
-                                <Text>description4</Text>
-                                <Text>description5</Text>
-                                <Text>description6</Text>
-                                <Text>description7</Text>
-                                <Text>description8</Text>
-                            </View>
-
-
-
-
-                        </View>
-                    </View>
-                </Modal> */
-
-/* <ScrollView Virtical={true} horizontal={true}>
-          <View>
-              <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
-                  <Row header={true} setVisibleTrue={this.setVisibleTrue} data={state.tableHead} widthArr={state.widthArr} style={styles.header} textStyle={styles.text} />
-              </Table>
-              <ScrollView style={styles.dataWrapper} onMoveShouldSetResponder={false}>
-                  <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }} heightArr={[30]}>
-
-                      {
-                          tableData.map((rowData, index) => (
-                              <Row
-                                  navigation={this.props.navigation}
-                                  rowKey={index}
-                                  data={rowData}
-                                  widthArr={state.widthArr}
-                                  style={[styles.row, index % 2 && { backgroundColor: '#F7F9F9' }]}
-                                  textStyle={styles.text}
-                              />
-                          ))
-                      }
-
-                  </Table>
-              </ScrollView>
-
-          </View>
-      </ScrollView>
- */

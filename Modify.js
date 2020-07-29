@@ -5,7 +5,7 @@ import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import Info from "./Info";
 import { Card } from "react-native-shadow-cards";
 
-export default class Modify extends Component {
+export class Modify extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -234,6 +234,8 @@ export default class Modify extends Component {
               icon={<AntDesign name="checkcircleo" size={24} color="white" />}
               disabled={!isRight()}
               onPress={() => {
+                console.log("Modify: ", inputData);
+
                 this.props.navigation.navigate('Home', {
                   weights: inputData
                 });
