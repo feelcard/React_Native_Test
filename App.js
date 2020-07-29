@@ -26,8 +26,8 @@ import { TablePage } from "./TablePage";
 
 let navigationForSend;
 
-let weights = {
-  wPer: 100,
+let globalWeights = {
+  wPer: 0,
   wPbr: 0,
   wRoa: 0,
   wRoe: 0,
@@ -43,8 +43,18 @@ class HomeScreen extends React.Component {
     this.state = {
       isVisible: false,
       pageState: true,
+      weights: {
+        wPer: 0,
+        wPbr: 0,
+        wRoa: 0,
+        wRoe: 0,
+        wDebtRatio: 0,
+        wOperMargin: 0,
+        wReserveRatio: 0,
+      },
     };
   }
+
   setVisibleTrue = () => {
     this.setState({ isVisible: true });
   };
@@ -53,8 +63,20 @@ class HomeScreen extends React.Component {
     this.setState({ isVisible: false });
   };
 
+  changeStateWeights = () => {
+    const { navigation } = this.props;
+    const updatedWeights = navigation.getParam("weights", null);
+
+    updatedWeights !== null &&
+      JSON.stringify(this.state.weights) !== JSON.stringify(updatedWeights) &&
+      this.setState({
+        weights: { ...updatedWeights },
+      });
+
+    updatedWeights !== null && (globalWeights = updatedWeights);
+  };
+
   render() {
-    const state = this.state;
     const Tab = createMaterialTopTabNavigator();
 
     const styles = StyleSheet.create({
@@ -125,6 +147,10 @@ class HomeScreen extends React.Component {
       },
     });
 
+    this.changeStateWeights();
+
+    const { weights } = this.state;
+
     return (
       <NavigationContainer>
         <Tab.Navigator
@@ -136,7 +162,10 @@ class HomeScreen extends React.Component {
           }}
         >
           <Tab.Screen name="Card" component={CardScreen} />
-          <Tab.Screen name="Table" component={TableScreen} />
+          <Tab.Screen
+            name="Table"
+            component={() => <TableScreen propsWeights={weights} />}
+          />
         </Tab.Navigator>
       </NavigationContainer>
     );
@@ -150,24 +179,38 @@ class CardScreen extends React.Component {
 }
 
 class TableScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tableWeights: { ...globalWeights },
+    };
+  }
+
+  componentWillMount() {
+    const { propsWeights } = this.props;
+    // console.log("propsWeights: ", propsWeights);
+
+    propsWeights !== null &&
+      this.setState({
+        tableWeights: { ...propsWeights },
+      });
+  }
+
   render() {
-    // console.log(navigationForSend)
-    return <TablePage navigation={navigationForSend} weights={weights} />;
+    const { tableWeights } = this.state;
+    // console.log("tableWeights: ", tableWeights);
+    return <TablePage navigation={navigationForSend} weights={tableWeights} />;
   }
 }
 
 class ModifyScreen extends React.Component {
-  changeWeights = (dataObj) => {
-    weights = dataObj;
-  };
 
   render() {
-    // console.log('ModifyScreen : '+JSON.stringify(this.props));
+    // console.log('globalWeights: ', JSON.stringify(globalWeights));
     return (
       <Modify
-        navigation={this.props.navigation}
-        weights={weights}
-        onChangeWeights={this.changeWeights}
+        navigation={this.props.navigation} 
+        weights={globalWeights}
       />
     );
   }

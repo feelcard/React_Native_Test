@@ -19,14 +19,9 @@ import {
 } from "react-native-table-component"; // table Component
 import { Modal } from "react-native-paper";
 import AsyncStorage from "@react-native-community/async-storage";
-import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
-import * as Font from 'expo-font';
-
-Font.loadAsync({
-    Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
-    'NanumGothic-Regular': require('./assets/fonts/NanumGothic-Regular.ttf'),
-    'NanumGothic-Bold': require('./assets/fonts/NanumGothic-Bold.ttf'),
-});
+import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
+import { Card } from "react-native-shadow-cards";
+import * as Font from "expo-font";
 
 const Hello = (name) => {
   return (
@@ -48,31 +43,31 @@ export class TablePage extends React.Component {
       tableDatas: [],
       weightsList: [
         {
-          name: "per",
+          name: "PER",
           stateKey: "wPer",
         },
         {
-          name: "pbr",
+          name: "PBR",
           stateKey: "wPbr",
         },
         {
-          name: "roa",
+          name: "ROA",
           stateKey: "wRoa",
         },
         {
-          name: "roe",
+          name: "ROE",
           stateKey: "wRoe",
         },
         {
-          name: "부채비율",
+          name: "DEBT",
           stateKey: "wDebtRatio",
         },
         {
-          name: "영업이익률",
+          name: "OPER",
           stateKey: "wOperMargin",
         },
         {
-          name: "유보율",
+          name: "RES",
           stateKey: "wReserveRatio",
         },
       ],
@@ -82,8 +77,8 @@ export class TablePage extends React.Component {
         wRoa: 0,
         wRoe: 0,
         wDebtRatio: 0,
-        wReserveRatio: 0,
         wOperMargin: 0,
+        wReserveRatio: 0,
       },
     };
   }
@@ -92,7 +87,21 @@ export class TablePage extends React.Component {
     this.setState({
       weights: { ...this.props.weights },
     });
+
+    
   }
+
+  whatColor = (weight) => {
+    if (weight >= 50) {
+      return "error";
+    } else if (weight >= 30) {
+      return "warning";
+    } else if (weight >= 10) {
+      return "primary";
+    } else {
+      return "success";
+    }
+  };
 
   setVisibleTrue = () => {
     this.setState({ isVisible: true });
@@ -106,7 +115,15 @@ export class TablePage extends React.Component {
     //  AsyncStorage
   };
 
+  
   render() {
+
+    Font.loadAsync({
+      Lobster: require("./assets/fonts/Lobster-Regular.ttf"),
+      "NanumGothic-Regular": require("./assets/fonts/NanumGothic-Regular.ttf"),
+      "NanumGothic-Bold": require("./assets/fonts/NanumGothic-Bold.ttf"),
+    });
+
     const state = this.state;
     AsyncStorage.multiGet(["삼성전자", "KB금융"]).then((data) => {
       this.setState({ tableHead: JSON.parse(data[0][1]).per });
@@ -132,8 +149,6 @@ export class TablePage extends React.Component {
     const styles = StyleSheet.create({
       container: {
         flex: 1,
-        padding: 16,
-        paddingTop: 13,
         backgroundColor: "#fff",
         marginHorizontal: 10,
         alignContent: "center",
@@ -168,7 +183,6 @@ export class TablePage extends React.Component {
       modal: {
         // flex: 1,
         // alignItems: 'center',
-
         backgroundColor: "#ffffff",
         borderWidth: 5,
         borderColor: "#ffffff", //#8D9093
@@ -187,14 +201,46 @@ export class TablePage extends React.Component {
         borderRadius: 2,
       },
       badgeList: {
-          flexDirection: 'row',
-          justifyContent: 'center',
-          marginBottom: 10,
-          backgroundColor: 'gray'
+        flexDirection: "row",
+        justifyContent: "center",
+        marginBottom: 15,
+        backgroundColor: "#60584c",
+        paddingVertical: 10,
       },
       badgeComp: {
-          marginHorizontal: 5,
-      }
+        alignItems: "center",
+        marginHorizontal: 2,
+        backgroundColor: '#89734c',
+        padding: 5,
+        width: 40,
+        borderRadius: 20
+      },
+      shadow: {
+        ...Platform.select({
+          ios: {
+            shadowColor: "#4D4D4D",
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 0.4,
+            shadowRadius: 4,
+          },
+          android: {
+            shadowColor: "#4D4D4D",
+            elevation: 5,
+          },
+        }),
+      },
+      badgeTitle: {
+        fontFamily: "NanumGothic-Bold",
+        marginBottom: 2,
+        color: "#ffbc00",
+        fontSize: 8,
+      },
+      scrollView: {
+        marginHorizontal: 10,
+      },
     });
 
     pageChange = (page) => {
@@ -202,60 +248,44 @@ export class TablePage extends React.Component {
       this.setState({ pageState: !this.state.pageState });
     };
 
+    const { weightsList, weights } = this.state;
+
+    // console.log('tablePage: ', weights);
+
     return (
       <View style={styles.container}>
-          
-        <View style={styles.container}>
-          <View style={styles.badgeList}>
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>PER</Text>
-                <Badge value='20' status="success" />
-            </View>
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>PBR</Text>
-                <Badge value='30' status="error" />
-            </View>
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
-                <Badge value='50' status="error" />
-            </View> 
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
-                <Badge value='50' status="warning" />
-            </View>
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
-                <Badge value='50' status="error" />
-            </View>
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
-                <Badge value='50' status="primary" />
-            </View>
-            <View style={styles.badgeComp}>
-                <Text style={{fontFamily: 'NanumGothic-Bold'}}>ROE</Text>
-                <Badge value='50' status="error" />
-            </View>           
-          </View>
-          <ScrollView Vertical={true}>
-            <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
-              <TableWrapper>
-                <Cols
-                  navigation={this.props.navigation}
-                  data={tableData}
-                  HeightArr={state.widthArr}
-                  style={[styles.row, { backgroundColor: "#F7F9F9" }]}
-                  textStyle={styles.text}
+        <View style={styles.badgeList}>
+          {weightsList.map((weight) => {
+            return (
+              <Card style={[styles.badgeComp, styles.shadow]}>
+                <Text style={styles.badgeTitle}>{weight.name}</Text>
+                <Badge
+                  value={weights[weight.stateKey].toString()}
+                  status={this.whatColor(weights[weight.stateKey])}
                 />
-              </TableWrapper>
-            </Table>
-          </ScrollView>
-
-          <Button
-            color="#89734c"
-            title="수치 설정하기"
-            onPress={() => this.props.navigation.navigate("Modify")}
-          />
+              </Card>
+            );
+          })}
         </View>
+        <ScrollView Vertical={true} style={styles.scrollView}>
+          <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+            <TableWrapper>
+              <Cols
+                navigation={this.props.navigation}
+                data={tableData}
+                HeightArr={state.widthArr}
+                style={[styles.row, { backgroundColor: "#F7F9F9" }]}
+                textStyle={styles.text}
+              />
+            </TableWrapper>
+          </Table>
+        </ScrollView>
+
+        <Button
+          color="#89734c"
+          title="수치 설정하기"
+          onPress={() => this.props.navigation.navigate("Modify")}
+        />
       </View>
     );
   }

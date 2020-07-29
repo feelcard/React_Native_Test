@@ -71,10 +71,6 @@ export default class Modify extends Component {
     this.onScroll = this.onScroll.bind(this);
   }
 
-  changeWeights = () => {
-    this.props.onChangeWeights(this.state.inputData);
-  };
-
   UNSAFE_componentWillMount() {
     this.setState({
       inputData: { ...this.props.weights },
@@ -238,8 +234,9 @@ export default class Modify extends Component {
               icon={<AntDesign name="checkcircleo" size={24} color="white" />}
               disabled={!isRight()}
               onPress={() => {
-                this.changeWeights();
-                this.props.navigation.navigate("Home");
+                this.props.navigation.navigate('Home', {
+                  weights: inputData
+                });
               }}
             />
           </View>
