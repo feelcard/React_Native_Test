@@ -18,6 +18,7 @@
     "@react-navigation/native": "^5.7.1",
     "bufferutil": "^4.0.1",
     "expo": "~38.0.1",
+    "expo-font": "^8.2.1",
     "expo-status-bar": "^1.0.0",
     "i": "^0.3.6",
     "npm": "^6.14.6",
@@ -51,5 +52,10 @@
     "@babel/core": "^7.8.6",
     "babel-preset-expo": "~8.1.0"
   },
-  "private": true
+  "private": true,
+  "rnpm": {
+    "assets": [
+      "./assets/fonts"
+    ]
+  }
 }
