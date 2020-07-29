@@ -53,10 +53,10 @@ const calculateData = (a, b) => {
 };
 
 let setSortingTableData = () => {
-  console.log("원본데이터", calArr.length);
+
   calArr.sort(calculateData);
   calArr10 = calArr.slice(0, 10);
-  console.log("뽑아온 데이터", calArr10.length);
+
 };
 
 class HomeScreen extends React.Component {
@@ -287,7 +287,7 @@ class TableScreen extends React.Component {
   render() {
     const { tableWeights, dataSet } = this.state;
 
-    console.log("table: ", dataSet[0]);
+    // console.log("table: ", dataSet[0]);
     return (
       <TablePage
         navigation={navigationForSend}
@@ -504,7 +504,7 @@ class App extends React.Component {
 
                 if (mergeArr.length == 2353) {
                   setTestArray(mergeArr).then((arr) => {
-                    console.log(mergeArr.length);
+                    // console.log(mergeArr.length);
                     calArr = calArr.concat(arr);
                     calArr.sort(calculateData);
                     calArr10 = calArr.slice(0, 10);
