@@ -16,18 +16,22 @@ let navigationForSend;
 let calArr=[];
 let cardRef;
 let tableRef;
-let w1= 1;//rankPer
-let w2= 0;//rankPbr
-let w3= 0;//rorankRoaa
-let w4= 0;//rankRoe
-let w5= 0;//rank_oper_profit_ratio
-let w6= 0;//rank_debt_ratio
-let w7= 0;//rank_reserve_ratio
+let globalWeight={
+    w1:1,//rankPer
+    w2:0,//rankPbr
+    w3:0,//rorankRoaa
+    w4:0,//rankRoe
+    w5:0,//rank_oper_profit_ratio
+    w6:0,//rank_debt_ratio
+    w7:0,//rank_reserve_ratio
+
+}
+
 
 const calculateData = (a,b) => {
-
-        let totalA=  (w1*a.rankPer) + (w2*a.rankPbr) + (w3*a.rankRoa) + (w4*a.rankRoe) + (w5*a.rankOper) + (w6*a.rankDebtRatio) + (w7*a.rankReserveRatio)
-        let totalB=  (w1*b.rankPer) + (w2*b.rankPbr) + (w3*b.rankRoa) + (w4*b.rankRoe) + (w5*b.rankOper) + (w6*b.rankDebtRatio) + (w7*b.rankReserveRatio)
+    let gw =globalWeight;
+        let totalA=  (gw.w1*a.rankPer) + (gw.w2*a.rankPbr) + (gw.w3*a.rankRoa) + (gw.w4*a.rankRoe) + (gw.w5*a.rankOper) + (gw.w6*a.rankDebtRatio) + (gw.w7*a.rankReserveRatio)
+        let totalB=  (gw.w1*b.rankPer) + (gw.w2*b.rankPbr) + (gw.w3*b.rankRoa) + (gw.w4*b.rankRoe) + (gw.w5*b.rankOper) +(gw.w6*b.rankDebtRatio) + (gw.w7*b.rankReserveRatio)
 
         if(totalA == totalB){ 
             return 0

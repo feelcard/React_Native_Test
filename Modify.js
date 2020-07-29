@@ -80,7 +80,7 @@ export class Modify extends React.Component {
                 </ScrollView>
                 <Button
                     title='Submit'
-                    onPress={() => this.props.navigation.navigate('Home')} />
+                    onPress={() => this.props.navigation.navigate('Modify')} />
 
             </View>
 

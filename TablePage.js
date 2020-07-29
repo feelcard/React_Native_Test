@@ -2,10 +2,26 @@ import React, { Component, Children } from 'react';
 import { StyleSheet, Text, View, Image, ToastAndroid, Button, ScrollView, Alert } from 'react-native';
 import { Table, TableWrapper, Row, Col, Cell, Cols } from 'react-native-table-component';// table Component
 import AsyncStorage from '@react-native-community/async-storage';
+import { AppLoading } from 'expo';
+import { useFonts } from 'expo-font';
 
-const Hello = (name) => {
+
+
+  
+const CellDesign = (text) => {
+    // let [fontsLoaded] = useFonts({
+    //     'Maplestory': require('./assets/fonts/Maplestory Bold.ttf'),
+    //   });
+ 
+    const styles = StyleSheet.create({
+        textStyle:{backgroundColor:'#fffeb3',alignItems:'center',padding:10}
+    });
+
+    // if (!fontsLoaded) {
+    //     return <AppLoading />;
+    //   }else
     return (
-        <View><Text>{name}</Text></View>
+        <View style={styles.textStyle }><Text>{text}</Text></View>
     );
 }
 
@@ -16,7 +32,7 @@ export class TablePage extends React.Component {
 
         this.state = {
             tableHead: {},
-            widthArr: [30, 30, 30, 30, 30, 30, 30, 30, 30,30],
+            widthArr: [40, 40, 40, 40, 40,40, 40, 40, 40,40,40],
             isVisible: false,
             pageState: true,
             dataSet: this.props.dataSet
@@ -36,18 +52,22 @@ export class TablePage extends React.Component {
 
     render() {
         const state = this.state;
-
-        let tableData = {};
+        let tableData={};
+        let tableScrollData = {};
         const asdf = () => {
-            let perdata = [];
-            let pbrdata = [];
-            let operatingdata = [];
-            let roadata = [];
-            let roedata = [];
-            let reverseRatiodata = [];
-            let debtRatiodata = [];
+            let nameData =["기업이름"];
+            let codeData =["종목코드"];
+            let perdata = ["PER"];
+            let pbrdata = ["PBR"];
+            let operatingdata = ["ROA"];
+            let roadata = ["ROE"];
+            let roedata = ["부채비율"];
+            let reverseRatiodata = ["영업이익률"];
+            let debtRatiodata = ["유보율"];
 
             this.props.dataSet.map((val, i) => {
+                nameData.push(i%2==0?CellDesign(val.cmpName):val.cmpName);
+                codeData.push(val.code);
                 perdata.push(val.per);
                 pbrdata.push(val.pbr);
                 operatingdata.push(val.operatingProfitRatio);
@@ -57,8 +77,12 @@ export class TablePage extends React.Component {
                 debtRatiodata.push(val.debtRatio);
 
             })
-
             tableData = [
+                nameData,
+                codeData
+            ];
+
+            tableScrollData = [
                 perdata,
                 pbrdata,
                 operatingdata,
@@ -66,20 +90,22 @@ export class TablePage extends React.Component {
                 roedata,
                 reverseRatiodata,
                 debtRatiodata
-            ]
+            ];
 
-            console.log('tableData:', tableData);
+           
         }
 
         asdf();
 
         const styles = StyleSheet.create({
-            container: { flex: 1, padding: 16, paddingTop: 13, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center' },
+            container: { flex: 1, padding: 16, paddingTop: 13, backgroundColor: '#fff', marginHorizontal: 10, alignContent: 'center',paddingBottom:70 },
+            tableContainer: { flex: 1,backgroundColor: '#fff', alignContent: 'center',flexDirection:'row'},
+            scrollTable:{paddingRight:130},
             header: { height: 50, backgroundColor: '#ffb81c' },
             text: { textAlign: 'center', fontWeight: '100' },
             // discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
             dataWrapper: { marginTop: -1 },
-            row: { height: 51.6, backgroundColor: '#ECF0F1' },
+            row: { height: 51.6, },
             semiheader: { flexDirection: 'row', flexWrap: 'wrap', padding: 15, borderBottomWidth: 3, borderBottomColor: 'gray', marginBottom: 5 },
             headtextmain: { flex: 1, textAlign: 'center', paddingRight: 15, borderBottomColor: '#ffb81c', borderBottomWidth: 0 },
             headtexttable: { flex: 1, textAlign: 'center', paddingLeft: 15, borderBottomColor: '#ffb81c', borderBottomWidth: 3 },
@@ -105,24 +131,47 @@ export class TablePage extends React.Component {
         return (
 
             <View style={styles.container}>
-
-            <ScrollView horizontal={true}>
-                <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
+                 <View style={styles.tableContainer}>
+          
+            <Table borderStyle={{ borderBottomWidth: 3, borderBottomColor: '#C1C0B9' }}>
                     <TableWrapper>
                         <Cols
                             navigation={this.props.navigation}
                             data={tableData}
                             heightArr={state.widthArr}
-                            widthArr={[50,50,50,50,50,80,80,80,80,80]}
-                            style={[styles.row, { backgroundColor: '#F7F9F9' }]}
+                            widthArr={[68,59]}
+                            style={[styles.row]}
+                            textStyle={styles.text}
+                        />
+
+                    </TableWrapper>
+                </Table>
+                <View style={styles.scrollTable}>
+                    <ScrollView horizontal={true} >
+                <Table borderStyle={{borderBottomWidth: 1, borderBottomColor: '#C1C0B9' }}>
+                    <TableWrapper>
+                        <Cols
+                            navigation={this.props.navigation}
+                            data={tableScrollData}
+                            heightArr={state.widthArr}
+                            widthArr={[50,43,43,48,55,65,55]}
+                            style={[styles.row, ]}
                             textStyle={styles.text}
                         />
 
                     </TableWrapper>
                 </Table>
                 </ScrollView>
-            </View>
-
+                </View>
+           
+                </View>
+                <Button
+                    title='Submit'
+                    onPress={() => this.props.navigation.navigate('Modify')} />
+                  </View>
+               
+          
+            
 
         )
 
