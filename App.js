@@ -452,6 +452,7 @@ class App extends React.Component {
             AsyncStorage.setItem(value.cmpName, JSON.stringify(value));
           });
         };
+    
 
         update_companyData(companyData, setLoadingText);
 

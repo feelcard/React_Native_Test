@@ -6,6 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 export class CardPage extends React.Component {
     constructor(props) {
         super(props);
+     
         this.state = {
             tableHead: ['기업이름', '상품코드', 'PER', 'PBR', 'ROA','ROE', 'Head7', 'Head8','Head9'],
             widthArr: [81, 81, 62, 62, 62, 62, 62, 62, 62],
