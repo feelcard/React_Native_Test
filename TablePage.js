@@ -1,4 +1,5 @@
 import React, { Component, Children } from "react";
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
     StyleSheet,
     Text,
@@ -24,29 +25,12 @@ import { Badge } from "react-native-elements";
 import * as Font from "expo-font";
 import { BadgeWeights } from "./BadgeWeights";
 
-const CellDesign = (text) => {
-    const styles = StyleSheet.create({
-        textStyle: {
-            backgroundColor: "#fffeb3",
-            alignItems: "center",
 
-        },
-    });
-
-    // if (!fontsLoaded) {
-    //     return <AppLoading />;
-    //   }else
-    return (
-        <View style={styles.textStyle}>
-            <Text>{text}</Text>
-        </View>
-    );
-};
 
 export class TablePage extends React.Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
             tableData: {},
             tableScrollData: {},
@@ -95,6 +79,83 @@ export class TablePage extends React.Component {
             ],
         };
     }
+    moveToDetailinTable = (text) => {
+
+
+        const moveToDetail = (cmpName) => {
+            AsyncStorage.getItem(cmpName + 'Info').then((data) => {
+                data = JSON.parse(data);
+                const tmpclip_ = data.code;
+                const detailA_ = [
+                    {
+                        name: '기업명',
+                        data: data.cmpName,
+                    },
+                    {
+                        name: '종목코드',
+                        data: data.code,
+                    },
+                    {
+                        name: '업종',
+                        data: data.market,
+                    },
+                    {
+                        name: '상세설명',
+                        data: data.description,
+                    }
+                ]
+                const detailB_ = [
+                    {
+                        name: '총자산',
+                        data: data.totalAsset,
+                    },
+                    {
+                        name: '총자본',
+                        data: data.totalEquity,
+                    },
+                    {
+                        name: '총부채',
+                        data: data.totalDebt,
+                    },
+                    {
+                        name: '매출액',
+                        data: data.sales,
+                    },
+                    {
+                        name: '영업이익',
+                        data: data.operatingProfit,
+                    },
+                    {
+                        name: '당기순이익',
+                        data: data.netIncome,
+                    },
+                    {
+                        name: '이익잉여금',
+                        data: data.retainedEarnings,
+                    }
+                ]
+                setTimeout(() => {
+                    this.props.navigation.navigate('Details',{
+                        tmpclip: tmpclip_,
+                        detailA: detailA_,
+                        detailB: detailB_
+                        // cmpName: JSON.stringify(this.props.dataSet[i].cmpName).replace('"', '').replace('"', '')
+                    });
+                }, 500);
+            })
+        }
+    
+        return (
+            <TouchableOpacity
+            onPress={() => {
+                moveToDetail(JSON.stringify(text).replace('"', '').replace('"', ''));
+            }}
+            >
+                <Text>{text}</Text>
+    
+            </TouchableOpacity>
+        );
+    };
 
     UNSAFE_componentWillMount() {
         this.setState({
@@ -115,7 +176,7 @@ export class TablePage extends React.Component {
             let debtRatiodata = ["유보율"];
 
             this.props.dataSet.map((val, i) => {
-                nameData.push(i % 2 == 0 ? CellDesign(val.cmpName) : val.cmpName);
+                nameData.push(val.cmpName!=null&&this.moveToDetailinTable(val.cmpName));
                 codeData.push(val.code);
                 perdata.push(val.per);
                 pbrdata.push(val.pbr);
@@ -173,7 +234,7 @@ export class TablePage extends React.Component {
 
     render() {
         const state = this.state;
-
+       
         const styles = StyleSheet.create({
             container: {
                 flex: 1,
@@ -195,7 +256,8 @@ export class TablePage extends React.Component {
             text: { textAlign: "center", fontWeight: "100" },
             // discription: { textAlign: 'left', fontSize: 25, backgroundColor: '#5e514d', color: 'white', padding: 3, paddingHorizontal: 20, position: 'absolute', translateX: -20, translateY: 10 },
             dataWrapper: { marginTop: -1 },
-            row: {flex:1,height:51.6 },
+            row: {flex:1,height:51.6},
+            buttonStyle:{backgroundColor:'green', borderRadius:5},
             semiheader: {
                 flexDirection: "row",
                 flexWrap: "wrap",
@@ -296,11 +358,12 @@ export class TablePage extends React.Component {
                         );
                     })}
                 </View>
+                <ScrollView Virtical={true}>
                 <View style={styles.tableContainer}>
                     <Table
-                        borderStyle={{ borderBottomWidth: 3, borderBottomColor: "#C1C0B9" }}
+                        borderStyle={{ borderBottomWidth: 1, borderBottomColor: "#C1C0B9" }}
                     >
-                        {
+                        {/* {
                             this.state.tableData.map((rowData, index) => (
                                
                                 <TableWrapper key={index} style={styles.row}>
@@ -312,21 +375,21 @@ export class TablePage extends React.Component {
                                 </TableWrapper>
                               
                             ))
-                        }
+                        } */}
 
 
-                        {/* <TableWrapper style={styles.row}>
+                        <TableWrapper style={styles.row} >
                       
                             <Cols
                 navigation={this.props.navigation}
                 data={this.state.tableData}
                 heightArr={state.widthArr}
                 widthArr={[68, 59]}
-                style={[styles.row]}
+                style={styles.row}
                 textStyle={styles.text}
               />
               
-                        </TableWrapper> */}
+                        </TableWrapper>
                     </Table>
                     <View style={styles.scrollTable}>
                         <ScrollView horizontal={true}>
@@ -341,8 +404,8 @@ export class TablePage extends React.Component {
                                         navigation={this.props.navigation}
                                         data={this.state.tableScrollData}
                                         heightArr={state.widthArr}
-                                        widthArr={[50, 43, 43, 48, 55, 65, 55]}
-                                        style={[styles.row]}
+                                        widthArr={[50, 43, 43, 43, 55, 70, 70]}
+                                        style={styles.row}
                                         textStyle={styles.text}
                                     />
                                 </TableWrapper>
@@ -350,8 +413,10 @@ export class TablePage extends React.Component {
                         </ScrollView>
                     </View>
                 </View>
+                </ScrollView>
                 <Button
-                    title="Submit"
+                    title="Weight modifiy"
+                    color='#ffb81c'
                     onPress={() => this.props.navigation.navigate("Modify")}
                 />
             </View>
