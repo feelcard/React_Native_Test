@@ -27,9 +27,6 @@ import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 
 let deviceWidth = Dimensions.get("window").width;
 
-let tmpclip;
-let detailA;
-let detailB;
 
 export class Detail extends React.Component {
   constructor(props) {
@@ -38,6 +35,7 @@ export class Detail extends React.Component {
       tmpclip: "",
       detailA: [],
       detailB: [],
+      isResponse: false,
     };
   }
 
@@ -487,6 +485,10 @@ export class Detail extends React.Component {
       },
     });
 
+    let imgUri = 'http://d2dzfaqwlhqkso.cloudfront.net/do-it-quant/' + detailA[1].data + '.jpg'
+    Image.getSize(imgUri, () => {this.setState({isResponse: true})}, () => {console.log('실패')});
+
+    const { isResponse } = this.state;
     return (
       <View style={{ flex: 1 }}>
         <View style={styles.titleContainer}>
@@ -497,7 +499,9 @@ export class Detail extends React.Component {
           >
             <Image
               style={styles.titleIcon}
-              source={require("./assets/105560.jpg")}
+              source={
+                isResponse? {uri: imgUri}: require('./images/default.jpg')
+              }
             />
           </View>
           <Text

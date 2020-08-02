@@ -2,49 +2,50 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Card } from "react-native-shadow-cards";
 import { Badge } from "react-native-elements";
+import * as Font from "expo-font";
 
 export class BadgeWeights extends React.Component {
-
   state = {
+    assetsLoaded: false,
     weights: {
-        wPer: 0,
-        wPbr: 0,
-        wRoa: 0,
-        wRoe: 0,
-        wDebtRatio: 0,
-        wOperMargin: 0,
-        wReserveRatio: 0,
+      wPer: 0,
+      wPbr: 0,
+      wRoa: 0,
+      wRoe: 0,
+      wDebtRatio: 0,
+      wOperMargin: 0,
+      wReserveRatio: 0,
     },
     weightsList: [
-        {
-          name: "PER",
-          stateKey: "wPer",
-        },
-        {
-          name: "PBR",
-          stateKey: "wPbr",
-        },
-        {
-          name: "ROA",
-          stateKey: "wRoa",
-        },
-        {
-          name: "ROE",
-          stateKey: "wRoe",
-        },
-        {
-          name: "DEBT",
-          stateKey: "wDebtRatio",
-        },
-        {
-          name: "OPER",
-          stateKey: "wOperMargin",
-        },
-        {
-          name: "RES",
-          stateKey: "wReserveRatio",
-        },
-      ],
+      {
+        name: "PER",
+        stateKey: "wPer",
+      },
+      {
+        name: "PBR",
+        stateKey: "wPbr",
+      },
+      {
+        name: "ROA",
+        stateKey: "wRoa",
+      },
+      {
+        name: "ROE",
+        stateKey: "wRoe",
+      },
+      {
+        name: "DEBT",
+        stateKey: "wDebtRatio",
+      },
+      {
+        name: "OPER",
+        stateKey: "wOperMargin",
+      },
+      {
+        name: "RES",
+        stateKey: "wReserveRatio",
+      },
+    ],
   };
 
   whatColor = (weight) => {
@@ -61,31 +62,65 @@ export class BadgeWeights extends React.Component {
 
   UNSAFE_componentWillMount() {
     const { propsWeights } = this.props;
-    
+
     this.setState({
-        weights: {...propsWeights},
+      weights: { ...propsWeights },
+    });
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      Lobster: require("./assets/fonts/Lobster-Regular.ttf"),
+      "NanumGothic-Regular": require("./assets/fonts/NanumGothic-Regular.ttf"),
+      "NanumGothic-Bold": require("./assets/fonts/NanumGothic-Bold.ttf"),
     });
 
+    this.setState({ assetsLoaded: true });
   }
 
   render() {
-    
-      const {weightsList, weights} = this.state; 
-    return (
-      <View style={styles.badgeList}>
-        {weightsList.map((weight) => {
-          return (
-            <Card style={[styles.badgeComp, styles.shadow]}>
-              <Text style={styles.badgeTitle}>{weight.name}</Text>
-              <Badge
-                value={weights[weight.stateKey].toString()}
-                status={this.whatColor(weights[weight.stateKey])}
-              />
-            </Card>
-          );
-        })}
-      </View>
-    );
+    const { assetsLoaded, weightsList, weights } = this.state;
+    if (assetsLoaded) {
+      return (
+        <View style={styles.badgeList}>
+          {weightsList.map((weight) => {
+            return (
+              <Card style={[styles.badgeComp, styles.shadow]}>
+                <Text style={styles.badgeTitle}>{weight.name}</Text>
+                <Badge
+                  value={weights[weight.stateKey].toString()}
+                  status={this.whatColor(weights[weight.stateKey])}
+                />
+              </Card>
+            );
+          })}
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.badgeList}>
+          {weightsList.map((weight) => {
+            return (
+              <Card style={[styles.badgeComp, styles.shadow]}>
+                <Text
+                  style={{
+                    marginBottom: 2,
+                    color: "#ffbc00",
+                    fontSize: 8,
+                  }}
+                >
+                  {weight.name}
+                </Text>
+                <Badge
+                  value={weights[weight.stateKey].toString()}
+                  status={this.whatColor(weights[weight.stateKey])}
+                />
+              </Card>
+            );
+          })}
+        </View>
+      );
+    }
   }
 }
 
@@ -123,7 +158,7 @@ const styles = StyleSheet.create({
     }),
   },
   badgeTitle: {
-    // fontFamily: "NanumGothic-Bold",
+    fontFamily: "NanumGothic-Bold",
     marginBottom: 2,
     color: "#ffbc00",
     fontSize: 8,

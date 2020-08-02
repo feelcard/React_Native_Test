@@ -53,10 +53,8 @@ const calculateData = (a, b) => {
 };
 
 let setSortingTableData = () => {
-
   calArr.sort(calculateData);
   calArr10 = calArr.slice(0, 10);
-
 };
 
 class HomeScreen extends React.Component {
@@ -178,6 +176,9 @@ class HomeScreen extends React.Component {
 
     const { weights } = this.state;
 
+    const cardComponent = () => <CardScreen propsWeights={weights} />
+    const tableComponent = () => <TableScreen propsWeights={weights} />
+
     return (
       <NavigationContainer>
         <Tab.Navigator
@@ -188,10 +189,13 @@ class HomeScreen extends React.Component {
             indicatorStyle: { borderColor: "#ffb81c", borderWidth: 1 },
           }}
         >
-          <Tab.Screen name="Card" component={CardScreen} />
+          <Tab.Screen
+            name="Card"
+            component={cardComponent}
+          />
           <Tab.Screen
             name="Table"
-            component={() => <TableScreen propsWeights={weights} />}
+            component={tableComponent}
           />
         </Tab.Navigator>
       </NavigationContainer>
@@ -223,7 +227,7 @@ class CardScreen extends React.Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { propsWeights } = this.props;
 
     propsWeights !== null &&
@@ -237,6 +241,7 @@ class CardScreen extends React.Component {
 
   render() {
     const { cardWeights, dataSet } = this.state;
+
     return (
       <CardPage
         navigation={navigationForSend}
@@ -272,7 +277,7 @@ class TableScreen extends React.Component {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { propsWeights } = this.props;
 
     propsWeights !== null &&
@@ -287,7 +292,7 @@ class TableScreen extends React.Component {
   render() {
     const { tableWeights, dataSet } = this.state;
 
-    // console.log("table: ", dataSet[0]);
+    console.log('table', tableWeights);
     return (
       <TablePage
         navigation={navigationForSend}
@@ -452,7 +457,6 @@ class App extends React.Component {
             AsyncStorage.setItem(value.cmpName, JSON.stringify(value));
           });
         };
-    
 
         update_companyData(companyData, setLoadingText);
 
@@ -504,7 +508,7 @@ class App extends React.Component {
 
                 if (mergeArr.length == 2353) {
                   setTestArray(mergeArr).then((arr) => {
-                    // console.log(mergeArr.length);
+                    console.log(mergeArr.length);
                     calArr = calArr.concat(arr);
                     calArr.sort(calculateData);
                     calArr10 = calArr.slice(0, 10);
