@@ -10,27 +10,41 @@ KB데이타시스템 연수원 프로젝트를 성공적으로 마무리하기 �
 
 ![image-20200802231248800](./README_Images/image-20200802231248800.png)
 
-![image-20200802231256960](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231256960.png)
+![image-20200802231256960](./README_Images/image-20200802231256960.png)
 
-![image-20200802231304843](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231304843.png)
 
-![image-20200802231308167](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231308167.png)
 
-![image-20200802231311661](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231311661.png)
+![image-20200802231304843](./README_Images/image-20200802231304843.png)
 
-![image-20200802231206132](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231206132.png)
+![image-20200802231308167](./README_Images/image-20200802231308167.png)
 
-![image-20200802231323687](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231323687.png)
+![image-20200802231311661](./README_Images/image-20200802231311661.png)
 
-![image-20200802231130284](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231130284.png)
 
-![image-20200802231136491](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231136491.png)
 
-![image-20200802231141441](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231141441.png)
+![image-20200802231206132](./README_Images/image-20200802231206132.png)
 
-![image-20200802231145433](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231145433.png)
+![image-20200802231323687](./README_Images/image-20200802231323687.png)
 
-![image-20200802231216777](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231216777.png)
+
+
+![image-20200802231130284](./README_Images/image-20200802231130284.png)
+
+
+
+![image-20200802231136491](./README_Images/image-20200802231136491.png)
+
+
+
+![image-20200802231141441](./README_Images/image-20200802231141441.png)
+
+
+
+![image-20200802231145433](./README_Images/image-20200802231145433.png)
+
+
+
+![image-20200802231216777](./README_Images/image-20200802231216777.png)
 
 ![](C:\Users\c\AppData\Roaming\Typora\typora-user-images\image-20200802231149757.png)
 
